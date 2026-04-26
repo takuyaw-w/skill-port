@@ -1,0 +1,48 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: docker/workspace/Dockerfile
+    container_name: skill-port-workspace
+    working_dir: /workspace
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/workspace
+      - skill-port-pnpm-store:/root/.local/share/pnpm/store
+      - skill-port-root-node-modules:/workspace/node_modules
+      - skill-port-api-node-modules:/workspace/apps/api/node_modules
+    environment:
+      TZ: Asia/Tokyo
+      DATABASE_URL: postgres://app:password@db:5432/app
+      BETTER_AUTH_SECRET: replace-me
+      BETTER_AUTH_URL: http://localhost:8787
+    ports:
+      - "8787:8787"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17.5
+    container_name: skill-port-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app
+      TZ: Asia/Tokyo
+    volumes:
+      - skill-port-db-data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  skill-port-db-data:
+  skill-port-pnpm-store:
+  skill-port-root-node-modules:
+  skill-port-api-node-modules:
