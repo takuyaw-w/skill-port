@@ -113,6 +113,6 @@ export const employees = appSchema.table('employees', {
   displayName: text("display_name").notNull(),
 
   status: text("status").default('active').notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().$onUpdate(() => new Date()).notNull()
 })

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { db } from "../../db/client.js";
 import { employees } from "../../db/schema.js";
+import { auth } from "../../auth/auth.js";
 
 export const adminEmployeesRoutes = new Hono()
 
@@ -14,11 +15,22 @@ adminEmployeesRoutes.get("/", async (c) => {
 
 adminEmployeesRoutes.post("/", async (c) => {
   const body = await c.req.json<{
-    userId: string;
+    email: string;
+    password: string;
+    name: string;
     employeeCode: string;
     fullName: string;
     displayName?: string;
   }>()
+
+  const result = await auth.api.createUser({
+    body: {
+      email: body.email,
+      password: body.password,
+      name: body.name,
+      role: "employee"
+    }
+  })
 
   const id = globalThis.crypto.randomUUID()
 
@@ -26,13 +38,23 @@ adminEmployeesRoutes.post("/", async (c) => {
     .insert(employees)
     .values({
       id,
-      userId: body.userId,
+      userId: result.user.id,
       employeeCode: body.employeeCode,
       fullName: body.fullName,
-      displayName: body.displayName,
+      displayName: body.displayName ?? body.fullName,
       status: "active"
     })
     .returning()
 
-  return c.json({ employee }, 201)
+  return c.json({
+    user: {
+      id: result.user.id,
+      email: result.user.email,
+      name: result.user.name,
+      role: result.user.role,
+    },
+    employee,
+  }, 201)
 })
+
+
