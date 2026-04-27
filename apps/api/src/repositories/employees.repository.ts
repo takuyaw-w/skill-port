@@ -58,3 +58,22 @@ export async function linkEmployeeToUser(
 
   return employee;
 }
+
+export async function findEmployeeByUserId(userId: string, client: DbClient = db,) {
+  const [employee] = await client
+    .select({
+      id: employees.id,
+      userId: employees.userId,
+      email: employees.email,
+      employeeCode: employees.employeeCode,
+      fullName: employees.fullName,
+      displayName: employees.displayName,
+      status: employees.status,
+      createdAt: employees.createdAt,
+      updatedAt: employees.updatedAt,
+    })
+    .from(employees)
+    .where(eq(employees.userId, userId))
+    .limit(1)
+  return employee ?? null
+}

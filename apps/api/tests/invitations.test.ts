@@ -1,8 +1,9 @@
-import { beforeEach, afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
+import { uniqueEmail } from "./helpers/test-data.js";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);
@@ -18,9 +19,12 @@ describe("invitations API", () => {
     await cleanupDatabase();
   });
 
-  it("employee can accept invitation and login", async () => {
-    const adminEmail = "admin@example.com";
+  it("employee can accept invitation, login, and fetch current employee", async () => {
+    const adminEmail = uniqueEmail("admin");
     const adminPassword = "password123";
+
+    const employeeEmail = uniqueEmail("employee");
+    const employeePassword = "employee-password123";
 
     await createTestUser({
       email: adminEmail,
@@ -38,7 +42,7 @@ describe("invitations API", () => {
         cookie: adminCookie,
       },
       body: JSON.stringify({
-        email: "employee@example.com",
+        email: employeeEmail,
         employeeCode: "EMP001",
         fullName: "Test Employee",
         displayName: "Employee",
@@ -58,13 +62,22 @@ describe("invitations API", () => {
 
     expect(invitationRes.status).toBe(200);
 
+    const invitationBody = await invitationRes.json();
+
+    expect(invitationBody.employee).toMatchObject({
+      employeeCode: "EMP001",
+      fullName: "Test Employee",
+      displayName: "Employee",
+      status: "pending_invitation",
+    });
+
     const acceptRes = await app.request(`/api/invitations/${token}/accept`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        password: "employee-password123",
+        password: employeePassword,
       }),
     });
 
@@ -74,8 +87,15 @@ describe("invitations API", () => {
 
     expect(acceptBody.status).toBe("ok");
     expect(acceptBody.user).toMatchObject({
-      email: "employee@example.com",
+      email: employeeEmail,
       role: "employee",
+    });
+    expect(acceptBody.employee).toMatchObject({
+      email: employeeEmail,
+      employeeCode: "EMP001",
+      fullName: "Test Employee",
+      displayName: "Employee",
+      status: "active",
     });
 
     const reusedInvitationRes = await app.request(`/api/invitations/${token}`, {
@@ -85,9 +105,33 @@ describe("invitations API", () => {
     expect(reusedInvitationRes.status).toBe(404);
 
     const employeeCookie = await loginAndGetCookie(
-      "employee@example.com",
-      "employee-password123",
+      employeeEmail,
+      employeePassword,
     );
+
+    const employeeMeRes = await app.request("/api/employee/me", {
+      method: "GET",
+      headers: {
+        cookie: employeeCookie,
+      },
+    });
+
+    expect(employeeMeRes.status).toBe(200);
+
+    const employeeMeBody = await employeeMeRes.json();
+
+    expect(employeeMeBody.status).toBe("ok");
+    expect(employeeMeBody.user).toMatchObject({
+      email: employeeEmail,
+      role: "employee",
+    });
+    expect(employeeMeBody.employee).toMatchObject({
+      email: employeeEmail,
+      employeeCode: "EMP001",
+      fullName: "Test Employee",
+      displayName: "Employee",
+      status: "active",
+    });
 
     const adminMeRes = await app.request("/api/admin/me", {
       method: "GET",
@@ -97,6 +141,15 @@ describe("invitations API", () => {
     });
 
     expect(adminMeRes.status).toBe(403);
+
+    const adminEmployeeMeRes = await app.request("/api/employee/me", {
+      method: "GET",
+      headers: {
+        cookie: adminCookie,
+      },
+    });
+
+    expect(adminEmployeeMeRes.status).toBe(403);
   });
 
   it("rejects short password when accepting invitation", async () => {
