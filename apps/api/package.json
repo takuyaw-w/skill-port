@@ -11,7 +11,9 @@
     "db:studio": "drizzle-kit studio --host 0.0.0.0",
     "api:auth:reference": "echo http://localhost:8787/api/auth/reference",
     "api:auth:openapi": "echo http://localhost:8787/api/auth/open-api/generate-schema",
-    "create-admin": "tsx scripts/create-admin-user.ts"
+    "create-admin": "tsx scripts/create-admin-user.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.14",
@@ -27,6 +29,7 @@
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.5"
   }
 }
