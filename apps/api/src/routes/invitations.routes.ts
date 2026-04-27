@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { acceptInvitationRequestSchema } from "../schemas/invitations.requests.js";
 import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
 import { Hono } from "hono";
-import { getPendingInvitationByToken } from "../services/invitations/ge-invitation.js";
+import { getPendingInvitationByToken } from "../services/invitations/get-invitation.js";
 import { acceptInvitation } from "../services/invitations/accept-invitation.js";
 
 export const invitationRoutes = new Hono()

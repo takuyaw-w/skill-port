@@ -1,8 +1,8 @@
 import { env } from "../../config/env.js";
 import { db } from '../../db/client.js'
-import { employeeInvitationTokens, employees } from "@/src/db/schema.js";
+import { employeeInvitationTokens, employees } from "../../db/schema.js";
 import { createInvitationExpiresAt, generateInvitationToken, hashInvitationToken } from "@/src/lib/invitation-token.js";
-import type { CreateEmployeeRequest } from "@/src/schemas/admin/employees.requests.js";
+import type { CreateEmployeeRequest } from "../../schemas/admin/employees.requests.js";
 
 export async function createEmployeeWithInvitation(
   input: CreateEmployeeRequest
