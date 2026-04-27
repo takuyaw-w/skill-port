@@ -5,4 +5,4 @@ export const acceptInvitationRequestSchema = z
     password: z.string().min(8).max(128),
   }).strict()
 
-export type acceptInvitationRequest = z.infer<typeof acceptInvitationRequestSchema>
+export type AcceptInvitationRequest = z.infer<typeof acceptInvitationRequestSchema>

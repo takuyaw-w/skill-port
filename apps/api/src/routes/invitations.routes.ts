@@ -1,165 +1,86 @@
 import { zValidator } from "@hono/zod-validator";
 import { acceptInvitationRequestSchema } from "../schemas/invitations.requests.js";
 import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
-import { and, eq, gt } from "drizzle-orm";
 import { Hono } from "hono";
-import { auth } from "../auth/auth.js";
-import { db } from "../db/client.js";
-import { employeeInvitationTokens, employees, user } from "../db/schema.js";
-import { hashInvitationToken } from "../lib/invitation-token.js";
+import { getPendingInvitationByToken } from "../services/invitations/ge-invitation.js";
+import { acceptInvitation } from "../services/invitations/accept-invitation.js";
 
 export const invitationRoutes = new Hono()
 
 invitationRoutes.get("/:token", async (c) => {
-  const token = c.req.param("token")
-  const tokenHash = hashInvitationToken(token)
+  const token = c.req.param("token");
 
-  const [invitation] = await db
-    .select({
-      invitationId: employeeInvitationTokens.id,
-      invitationStatus: employeeInvitationTokens.status,
-      expiresAt: employeeInvitationTokens.expiresAt,
-
-      employeeId: employees.id,
-      employeeCode: employees.employeeCode,
-      fullName: employees.fullName,
-      displayName: employees.displayName,
-      employeeStatus: employees.status,
-    })
-    .from(employeeInvitationTokens)
-    .innerJoin(employees, eq(employeeInvitationTokens.employeeId, employees.id))
-    .where(
-      and(
-        eq(employeeInvitationTokens.tokenHash, tokenHash),
-        eq(employeeInvitationTokens.status, "pending"),
-        gt(employeeInvitationTokens.expiresAt, new Date())
-      )
-    )
-    .limit(1);
+  const invitation = await getPendingInvitationByToken(token);
 
   if (!invitation) {
-    return c.json({
-      error: "Invitation not found or expired",
-    }, 404)
+    return c.json(
+      {
+        error: "Invitation not found or expired",
+      },
+      404,
+    );
   }
 
   return c.json({
     invitation: {
       id: invitation.invitationId,
-      expiresAt: invitation.expiresAt
+      expiresAt: invitation.expiresAt,
     },
     employee: {
       id: invitation.employeeId,
       employeeCode: invitation.employeeCode,
       fullName: invitation.fullName,
       displayName: invitation.displayName,
-      status: invitation.employeeStatus
+      status: invitation.employeeStatus,
     },
-  })
-})
+  });
+});
 
-invitationRoutes.post("/:token/accept", zValidator("json", acceptInvitationRequestSchema, (result, c) => {
-  if (!result.success) {
-    return zodErrorResponse(c, result.error)
-  }
-}),
+invitationRoutes.post(
+  "/:token/accept",
+  zValidator("json", acceptInvitationRequestSchema, (result, c) => {
+    if (!result.success) {
+      return zodErrorResponse(c, result.error);
+    }
+  }),
   async (c) => {
     const token = c.req.param("token");
-    const tokenHash = hashInvitationToken(token);
+    const body = c.req.valid("json");
 
-    const body = await c.req.valid('json');
+    const result = await acceptInvitation(token, body);
 
-    const [invitation] = await db
-      .select({
-        invitationId: employeeInvitationTokens.id,
-        employeeId: employees.id,
-        employeeCode: employees.employeeCode,
-        email: employees.email,
-        fullName: employees.fullName,
-        displayName: employees.displayName,
-        employeeStatus: employees.status,
-        employeeUserId: employees.userId,
-      })
-      .from(employeeInvitationTokens)
-      .innerJoin(employees, eq(employeeInvitationTokens.employeeId, employees.id))
-      .where(
-        and(
-          eq(employeeInvitationTokens.tokenHash, tokenHash),
-          eq(employeeInvitationTokens.status, "pending"),
-          gt(employeeInvitationTokens.expiresAt, new Date()),
-        ),
-      )
-      .limit(1);
+    if (!result.ok) {
+      switch (result.error) {
+        case "INVITATION_NOT_FOUND_OR_EXPIRED":
+          return c.json(
+            {
+              error: "Invitation not found or expired",
+            },
+            404,
+          );
 
-    if (!invitation) {
-      return c.json(
-        {
-          error: "Invitation not found or expired",
-        },
-        404,
-      );
+        case "EMPLOYEE_ALREADY_LINKED":
+          return c.json(
+            {
+              error: "Employee is already linked to a user",
+            },
+            409,
+          );
+
+        case "EMPLOYEE_NOT_PENDING_INVITATION":
+          return c.json(
+            {
+              error: "Employee is not pending invitation",
+            },
+            409,
+          );
+      }
     }
-
-    if (invitation.employeeUserId) {
-      return c.json(
-        {
-          error: "Employee is already linked to a user",
-        },
-        409,
-      );
-    }
-
-    if (invitation.employeeStatus !== "pending_invitation") {
-      return c.json(
-        {
-          error: "Employee is not pending invitation",
-        },
-        409,
-      );
-    }
-
-    const result = await auth.api.createUser({
-      body: {
-        email: invitation.email,
-        password: body.password,
-        name: invitation.fullName,
-        role: "employee",
-      },
-    });
-
-    await db.transaction(async (tx) => {
-      await tx
-        .update(employees)
-        .set({
-          userId: result.user.id,
-          status: "active",
-        })
-        .where(eq(employees.id, invitation.employeeId));
-
-      await tx
-        .update(employeeInvitationTokens)
-        .set({
-          status: "used",
-          usedAt: new Date(),
-        })
-        .where(eq(employeeInvitationTokens.id, invitation.invitationId));
-    });
 
     return c.json({
       status: "ok",
-      user: {
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        role: result.user.role,
-      },
-      employee: {
-        id: invitation.employeeId,
-        employeeCode: invitation.employeeCode,
-        email: invitation.email,
-        fullName: invitation.fullName,
-        displayName: invitation.displayName,
-        status: "active",
-      },
+      user: result.data.user,
+      employee: result.data.employee,
     });
-  });
+  },
+);
