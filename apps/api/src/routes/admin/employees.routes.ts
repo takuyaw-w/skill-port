@@ -1,20 +1,22 @@
-import { zValidator } from '@hono/zod-validator'
-import { Hono } from "hono";
-import { db } from "../../db/client.js";
-import { employees } from "../../db/schema.js";
-import { createEmployeeRequestSchema } from '../../schemas/admin/employees.requests.js';
-import { zodErrorResponse } from '../../shared/validation/zod-error-response.js';
-import { createEmployeeWithInvitation } from '../../services/admin/create-employee-with-invitation.js';
+// apps/api/src/routes/admin/employees.routes.ts
 
-export const adminEmployeesRoutes = new Hono()
+import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
+
+import { createEmployeeRequestSchema } from "../../schemas/admin/employees.requests.js";
+import { createEmployeeWithInvitation } from "../../services/admin/create-employee-with-invitation.js";
+import { listEmployees } from "../../services/admin/list-employees.js";
+import { zodErrorResponse } from "../../shared/validation/zod-error-response.js";
+
+export const adminEmployeesRoutes = new Hono();
 
 adminEmployeesRoutes.get("/", async (c) => {
-  const rows = await db.select().from(employees);
+  const employees = await listEmployees();
 
   return c.json({
-    employees: rows
-  })
-})
+    employees,
+  });
+});
 
 adminEmployeesRoutes.post(
   "/",
@@ -24,12 +26,10 @@ adminEmployeesRoutes.post(
     }
   }),
   async (c) => {
-    const body = await c.req.valid("json")
+    const body = c.req.valid("json");
 
-    const result = await createEmployeeWithInvitation(body)
+    const result = await createEmployeeWithInvitation(body);
 
-    return c.json(result, 201)
-  })
-
-
-
+    return c.json(result, 201);
+  },
+);

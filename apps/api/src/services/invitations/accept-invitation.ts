@@ -1,9 +1,11 @@
-import { and, eq, gt } from "drizzle-orm";
-
 import { auth } from "../../auth/auth.js";
 import { db } from "../../db/client.js";
-import { employeeInvitationTokens, employees } from "../../db/schema.js";
 import { hashInvitationToken } from "../../lib/invitation-token.js";
+import {
+  findPendingInvitationByTokenHash,
+  markInvitationTokenAsUsed,
+} from "../../repositories/employee-invitation-tokens.repository.js";
+import { linkEmployeeToUser } from "../../repositories/employees.repository.js";
 import type { AcceptInvitationRequest } from "../../schemas/invitations.requests.js";
 
 type AcceptInvitationErrorCode =
@@ -26,7 +28,7 @@ type AcceptInvitationResult =
         employeeCode: string;
         email: string;
         fullName: string;
-        displayName: string | null;
+        displayName: string;
         status: "active";
       };
     };
@@ -42,27 +44,7 @@ export async function acceptInvitation(
 ): Promise<AcceptInvitationResult> {
   const tokenHash = hashInvitationToken(token);
 
-  const [invitation] = await db
-    .select({
-      invitationId: employeeInvitationTokens.id,
-      employeeId: employees.id,
-      employeeCode: employees.employeeCode,
-      email: employees.email,
-      fullName: employees.fullName,
-      displayName: employees.displayName,
-      employeeStatus: employees.status,
-      employeeUserId: employees.userId,
-    })
-    .from(employeeInvitationTokens)
-    .innerJoin(employees, eq(employeeInvitationTokens.employeeId, employees.id))
-    .where(
-      and(
-        eq(employeeInvitationTokens.tokenHash, tokenHash),
-        eq(employeeInvitationTokens.status, "pending"),
-        gt(employeeInvitationTokens.expiresAt, new Date()),
-      ),
-    )
-    .limit(1);
+  const invitation = await findPendingInvitationByTokenHash(tokenHash);
 
   if (!invitation) {
     return {
@@ -85,7 +67,7 @@ export async function acceptInvitation(
     };
   }
 
-  const result = await auth.api.createUser({
+  const createdUser = await auth.api.createUser({
     body: {
       email: invitation.email,
       password: input.password,
@@ -95,31 +77,30 @@ export async function acceptInvitation(
   });
 
   await db.transaction(async (tx) => {
-    await tx
-      .update(employees)
-      .set({
-        userId: result.user.id,
-        status: "active",
-      })
-      .where(eq(employees.id, invitation.employeeId));
+    await linkEmployeeToUser(
+      {
+        employeeId: invitation.employeeId,
+        userId: createdUser.user.id,
+      },
+      tx,
+    );
 
-    await tx
-      .update(employeeInvitationTokens)
-      .set({
-        status: "used",
-        usedAt: new Date(),
-      })
-      .where(eq(employeeInvitationTokens.id, invitation.invitationId));
+    await markInvitationTokenAsUsed(
+      {
+        invitationId: invitation.invitationId,
+      },
+      tx,
+    );
   });
 
   return {
     ok: true,
     data: {
       user: {
-        id: result.user.id,
-        email: result.user.email,
-        name: result.user.name,
-        role: result.user.role,
+        id: createdUser.user.id,
+        email: createdUser.user.email,
+        name: createdUser.user.name,
+        role: createdUser.user.role,
       },
       employee: {
         id: invitation.employeeId,
