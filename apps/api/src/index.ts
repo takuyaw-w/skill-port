@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 
 import { db } from './db/client.js'
 import { healthChecks } from './db/schema.js'
+import { auth } from '../src/auth/auth.js'
 
 const app = new Hono()
 
@@ -15,6 +16,10 @@ app.get("/", (c) => {
 
 app.get('/health', (c) => {
   return c.json({ status: "ok" })
+})
+
+app.on(["GET", "POST"], "api/auth/*", (c) => {
+  return auth.handler(c.req.raw)
 })
 
 app.get('/health/db', async (c) => {
