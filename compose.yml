@@ -12,11 +12,10 @@ services:
       - skill-port-pnpm-store:/root/.local/share/pnpm/store
       - skill-port-root-node-modules:/workspace/node_modules
       - skill-port-api-node-modules:/workspace/apps/api/node_modules
+    env_file:
+      - .env
     environment:
       TZ: Asia/Tokyo
-      DATABASE_URL: postgres://app:password@db:5432/app
-      BETTER_AUTH_SECRET: replace-me
-      BETTER_AUTH_URL: http://localhost:8787
     ports:
       - "8787:8787"
     depends_on:
