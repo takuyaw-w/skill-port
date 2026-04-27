@@ -20,7 +20,7 @@ app.get('/health', (c) => {
   return c.json({ status: "ok" })
 })
 
-app.on(["GET", "POST"], "api/auth/**", (c) => {
+app.on(["GET", "POST"], "/api/auth/**", (c) => {
   return auth.handler(c.req.raw)
 })
 

@@ -34,7 +34,7 @@ invitationRoutes.get("/:token", async (c) => {
       and(
         eq(employeeInvitationTokens.tokenHash, tokenHash),
         eq(employeeInvitationTokens.status, "pending"),
-        eq(employeeInvitationTokens.expiresAt, new Date())
+        gt(employeeInvitationTokens.expiresAt, new Date())
       )
     )
     .limit(1);
@@ -90,7 +90,7 @@ invitationRoutes.post("/:token/accept", async (c) => {
       and(
         eq(employeeInvitationTokens.tokenHash, tokenHash),
         eq(employeeInvitationTokens.status, "pending"),
-        eq(employeeInvitationTokens.expiresAt, new Date()),
+        gt(employeeInvitationTokens.expiresAt, new Date()),
       )
     )
     .limit(1)
