@@ -1,3 +1,6 @@
+import { zValidator } from "@hono/zod-validator";
+import { acceptInvitationRequestSchema } from "../schemas/invitations.requests.js";
+import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
 import { and, eq, gt } from "drizzle-orm";
 import { Hono } from "hono";
 import { auth } from "../auth/auth.js";
@@ -55,114 +58,108 @@ invitationRoutes.get("/:token", async (c) => {
   })
 })
 
-invitationRoutes.post("/:token/accept", async (c) => {
-  const token = c.req.param("token");
-  const tokenHash = hashInvitationToken(token);
-
-  const body = await c.req.json<{
-    password: string;
-  }>();
-
-  if (body.password.length < 8) {
-    return c.json(
-      {
-        error: "Password must be at least 8 characters",
-      },
-      400,
-    );
+invitationRoutes.post("/:token/accept", zValidator("json", acceptInvitationRequestSchema, (result, c) => {
+  if (!result.success) {
+    return zodErrorResponse(c, result.error)
   }
+}),
+  async (c) => {
+    const token = c.req.param("token");
+    const tokenHash = hashInvitationToken(token);
 
-  const [invitation] = await db
-    .select({
-      invitationId: employeeInvitationTokens.id,
-      employeeId: employees.id,
-      employeeCode: employees.employeeCode,
-      email: employees.email,
-      fullName: employees.fullName,
-      displayName: employees.displayName,
-      employeeStatus: employees.status,
-      employeeUserId: employees.userId,
-    })
-    .from(employeeInvitationTokens)
-    .innerJoin(employees, eq(employeeInvitationTokens.employeeId, employees.id))
-    .where(
-      and(
-        eq(employeeInvitationTokens.tokenHash, tokenHash),
-        eq(employeeInvitationTokens.status, "pending"),
-        gt(employeeInvitationTokens.expiresAt, new Date()),
-      ),
-    )
-    .limit(1);
+    const body = await c.req.valid('json');
 
-  if (!invitation) {
-    return c.json(
-      {
-        error: "Invitation not found or expired",
+    const [invitation] = await db
+      .select({
+        invitationId: employeeInvitationTokens.id,
+        employeeId: employees.id,
+        employeeCode: employees.employeeCode,
+        email: employees.email,
+        fullName: employees.fullName,
+        displayName: employees.displayName,
+        employeeStatus: employees.status,
+        employeeUserId: employees.userId,
+      })
+      .from(employeeInvitationTokens)
+      .innerJoin(employees, eq(employeeInvitationTokens.employeeId, employees.id))
+      .where(
+        and(
+          eq(employeeInvitationTokens.tokenHash, tokenHash),
+          eq(employeeInvitationTokens.status, "pending"),
+          gt(employeeInvitationTokens.expiresAt, new Date()),
+        ),
+      )
+      .limit(1);
+
+    if (!invitation) {
+      return c.json(
+        {
+          error: "Invitation not found or expired",
+        },
+        404,
+      );
+    }
+
+    if (invitation.employeeUserId) {
+      return c.json(
+        {
+          error: "Employee is already linked to a user",
+        },
+        409,
+      );
+    }
+
+    if (invitation.employeeStatus !== "pending_invitation") {
+      return c.json(
+        {
+          error: "Employee is not pending invitation",
+        },
+        409,
+      );
+    }
+
+    const result = await auth.api.createUser({
+      body: {
+        email: invitation.email,
+        password: body.password,
+        name: invitation.fullName,
+        role: "employee",
       },
-      404,
-    );
-  }
+    });
 
-  if (invitation.employeeUserId) {
-    return c.json(
-      {
-        error: "Employee is already linked to a user",
+    await db.transaction(async (tx) => {
+      await tx
+        .update(employees)
+        .set({
+          userId: result.user.id,
+          status: "active",
+        })
+        .where(eq(employees.id, invitation.employeeId));
+
+      await tx
+        .update(employeeInvitationTokens)
+        .set({
+          status: "used",
+          usedAt: new Date(),
+        })
+        .where(eq(employeeInvitationTokens.id, invitation.invitationId));
+    });
+
+    return c.json({
+      status: "ok",
+      user: {
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
+        role: result.user.role,
       },
-      409,
-    );
-  }
-
-  if (invitation.employeeStatus !== "pending_invitation") {
-    return c.json(
-      {
-        error: "Employee is not pending invitation",
-      },
-      409,
-    );
-  }
-
-  const result = await auth.api.createUser({
-    body: {
-      email: invitation.email,
-      password: body.password,
-      name: invitation.fullName,
-      role: "employee",
-    },
-  });
-
-  await db.transaction(async (tx) => {
-    await tx
-      .update(employees)
-      .set({
-        userId: result.user.id,
+      employee: {
+        id: invitation.employeeId,
+        employeeCode: invitation.employeeCode,
+        email: invitation.email,
+        fullName: invitation.fullName,
+        displayName: invitation.displayName,
         status: "active",
-      })
-      .where(eq(employees.id, invitation.employeeId));
-
-    await tx
-      .update(employeeInvitationTokens)
-      .set({
-        status: "used",
-        usedAt: new Date(),
-      })
-      .where(eq(employeeInvitationTokens.id, invitation.invitationId));
+      },
+    });
   });
-
-  return c.json({
-    status: "ok",
-    user: {
-      id: result.user.id,
-      email: result.user.email,
-      name: result.user.name,
-      role: result.user.role,
-    },
-    employee: {
-      id: invitation.employeeId,
-      employeeCode: invitation.employeeCode,
-      email: invitation.email,
-      fullName: invitation.fullName,
-      displayName: invitation.displayName,
-      status: "active",
-    },
-  });
-});
