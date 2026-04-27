@@ -8,7 +8,8 @@ export const env = createEnv({
       .default('development'),
     DATABASE_URL: z.string().min(1),
     BETTER_AUTH_SECRET: z.string().min(1),
-    BETTER_AUTH_URL: z.url()
+    BETTER_AUTH_URL: z.url(),
+    EMPLOYEE_WEB_URL: z.url(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true
