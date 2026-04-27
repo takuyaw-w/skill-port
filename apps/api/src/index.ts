@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { db } from './db/client.js'
 import { healthChecks } from './db/schema.js'
 import { adminRoutes } from './routes/admin.routes.js'
+import { invitationRoutes } from './routes/invitations.routes.js'
 import { auth } from '../src/auth/auth.js'
 
 const app = new Hono()
@@ -34,7 +35,8 @@ app.get('/health/db', async (c) => {
   })
 })
 
-app.route("api/admin", adminRoutes)
+app.route("/api/admin", adminRoutes)
+app.route('/api/invitations', invitationRoutes)
 
 serve({
   fetch: app.fetch,
