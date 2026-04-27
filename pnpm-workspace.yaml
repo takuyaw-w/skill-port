@@ -8,3 +8,4 @@ catalog:
   "@t3-oss/env-core": ^0.13.11
   vitest: ^4.1.5
   zod: ^4.3.6
+  typescript: ^6.0.3
