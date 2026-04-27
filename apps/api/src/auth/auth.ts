@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { openAPI, admin } from "better-auth/plugins";
 import { db } from "../db/client.js";
 import { env } from "../config/env.js";
+import { ac, adminRole, employeeRole } from './permissions.js'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -17,6 +18,11 @@ export const auth = betterAuth({
 
   plugins: [
     admin({
+      ac,
+      roles: {
+        admin: adminRole,
+        employee: employeeRole
+      },
       defaultRole: "employee",
       adminRoles: ["admin"],
     }),
