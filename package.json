@@ -8,7 +8,8 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
-    "api:dev": "pnpm --filter @skill-port/api dev"
+    "api:dev": "pnpm --filter @skill-port/api dev",
+    "auth:secret": "pnpm dlx @better-auth/cli@latest secret"
   },
   "packageManager": "pnpm@10.33.2",
   "engines": {
