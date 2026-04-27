@@ -1,0 +1,19 @@
+import { createHash, randomBytes } from "node:crypto";
+
+export function generateInvitationToken() {
+  return randomBytes(32).toString("base64url")
+}
+
+export function hashInvitationToken(token: string) {
+  return createHash("sha256").update(token).digest("hex")
+}
+
+export function createInvitationExpiresAt() {
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + 7);
+  return expiresAt
+}
+
+export function generateTemporaryPassword() {
+  return randomBytes(32).toString("base64url");
+}

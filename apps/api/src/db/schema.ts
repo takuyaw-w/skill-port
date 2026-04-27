@@ -127,4 +127,6 @@ export const employeeInvitationTokens = appSchema.table('employee_invitation_tok
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   usedAt: timestamp("used_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
-})
+}, (table) => [
+  index("employee_invitation_tokens_employee_id_idx").on(table.employeeId)
+])
