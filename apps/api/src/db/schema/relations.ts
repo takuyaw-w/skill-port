@@ -31,12 +31,9 @@ export const employeeRelations = relations(employees, ({ one, many }) => ({
   invitationTokens: many(employeeInvitationTokens),
 }));
 
-export const employeeInvitationTokenRelations = relations(
-  employeeInvitationTokens,
-  ({ one }) => ({
-    employee: one(employees, {
-      fields: [employeeInvitationTokens.employeeId],
-      references: [employees.id],
-    }),
+export const employeeInvitationTokenRelations = relations(employeeInvitationTokens, ({ one }) => ({
+  employee: one(employees, {
+    fields: [employeeInvitationTokens.employeeId],
+    references: [employees.id],
   }),
-);
+}));

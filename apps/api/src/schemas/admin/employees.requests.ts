@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 export const createEmployeeRequestSchema = z
   .object({
@@ -7,6 +7,7 @@ export const createEmployeeRequestSchema = z
     fullName: z.string().trim().min(1).max(100),
     displayName: z.string().trim().min(1).max(100).optional(),
     name: z.string().trim().min(1).max(100).optional(),
-  }).strict()
+  })
+  .strict();
 
-export type CreateEmployeeRequest = z.infer<typeof createEmployeeRequestSchema>
+export type CreateEmployeeRequest = z.infer<typeof createEmployeeRequestSchema>;

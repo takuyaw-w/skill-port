@@ -104,10 +104,7 @@ describe("invitations API", () => {
 
     expect(reusedInvitationRes.status).toBe(404);
 
-    const employeeCookie = await loginAndGetCookie(
-      employeeEmail,
-      employeePassword,
-    );
+    const employeeCookie = await loginAndGetCookie(employeeEmail, employeePassword);
 
     const employeeMeRes = await app.request("/api/employee/me", {
       method: "GET",

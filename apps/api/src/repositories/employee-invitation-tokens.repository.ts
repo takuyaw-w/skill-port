@@ -35,10 +35,7 @@ export async function createEmployeeInvitationToken(
   return invitationToken;
 }
 
-export async function findPendingInvitationByTokenHash(
-  tokenHash: string,
-  client: DbClient = db,
-) {
+export async function findPendingInvitationByTokenHash(tokenHash: string, client: DbClient = db) {
   const [invitation] = await client
     .select({
       invitationId: employeeInvitationTokens.id,

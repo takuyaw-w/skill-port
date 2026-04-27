@@ -9,9 +9,7 @@ import { createEmployeeInvitationToken } from "../../repositories/employee-invit
 import { createPendingEmployee } from "../../repositories/employees.repository.js";
 import type { CreateEmployeeRequest } from "../../schemas/admin/employees.requests.js";
 
-export async function createEmployeeWithInvitation(
-  input: CreateEmployeeRequest,
-) {
+export async function createEmployeeWithInvitation(input: CreateEmployeeRequest) {
   const employeeId = globalThis.crypto.randomUUID();
   const invitationToken = generateInvitationToken();
 

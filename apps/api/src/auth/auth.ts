@@ -3,17 +3,17 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { openAPI, admin } from "better-auth/plugins";
 import { db } from "../db/client.js";
 import { env } from "../config/env.js";
-import { ac, adminRole, employeeRole } from './permissions.js'
+import { ac, adminRole, employeeRole } from "./permissions.js";
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
 
-  database: drizzleAdapter(db, { provider: 'pg' }),
+  database: drizzleAdapter(db, { provider: "pg" }),
 
   emailAndPassword: {
     enabled: true,
-    disableSignUp: true
+    disableSignUp: true,
   },
 
   plugins: [
@@ -21,11 +21,11 @@ export const auth = betterAuth({
       ac,
       roles: {
         admin: adminRole,
-        employee: employeeRole
+        employee: employeeRole,
       },
       defaultRole: "employee",
       adminRoles: ["admin"],
     }),
-    openAPI()
-  ]
-})
+    openAPI(),
+  ],
+});

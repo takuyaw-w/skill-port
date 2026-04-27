@@ -15,28 +15,28 @@ type AcceptInvitationErrorCode =
 
 type AcceptInvitationResult =
   | {
-    ok: true;
-    data: {
-      user: {
-        id: string;
-        email: string;
-        name: string;
-        role: string | null | undefined;
+      ok: true;
+      data: {
+        user: {
+          id: string;
+          email: string;
+          name: string;
+          role: string | null | undefined;
+        };
+        employee: {
+          id: string;
+          employeeCode: string;
+          email: string;
+          fullName: string;
+          displayName: string;
+          status: "active";
+        };
       };
-      employee: {
-        id: string;
-        employeeCode: string;
-        email: string;
-        fullName: string;
-        displayName: string;
-        status: "active";
-      };
-    };
-  }
+    }
   | {
-    ok: false;
-    error: AcceptInvitationErrorCode;
-  };
+      ok: false;
+      error: AcceptInvitationErrorCode;
+    };
 
 export async function acceptInvitation(
   token: string,

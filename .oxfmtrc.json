@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 100,
+  "trailingComma": "all",
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    ".nuxt/**",
+    ".output/**",
+    "**/db/migration/meta/**",
+    "**/db/migrations/meta/**",
+    "pnpm-lock.yaml",
+    "*.log"
+  ]
+}

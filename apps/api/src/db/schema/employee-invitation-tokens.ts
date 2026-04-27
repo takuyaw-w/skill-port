@@ -20,7 +20,5 @@ export const employeeInvitationTokens = appSchema.table(
 
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
-  (table) => [
-    index("employee_invitation_tokens_employee_id_idx").on(table.employeeId),
-  ],
+  (table) => [index("employee_invitation_tokens_employee_id_idx").on(table.employeeId)],
 );

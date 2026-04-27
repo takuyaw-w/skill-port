@@ -5,13 +5,13 @@ export const statement = {
   ...defaultStatements,
 } as const;
 
-export const ac = createAccessControl(statement)
+export const ac = createAccessControl(statement);
 
 export const adminRole = ac.newRole({
-  ...adminAc.statements
-})
+  ...adminAc.statements,
+});
 
 export const employeeRole = ac.newRole({
   user: [],
   session: [],
-})
+});

@@ -29,10 +29,7 @@ app.on(["GET", "POST"], "/api/auth/**", (c) => {
 app.get("/health/db", async (c) => {
   const id = globalThis.crypto.randomUUID();
 
-  const [record] = await db
-    .insert(healthChecks)
-    .values({ id, message: "ok" })
-    .returning();
+  const [record] = await db.insert(healthChecks).values({ id, message: "ok" }).returning();
 
   return c.json({
     status: "ok",

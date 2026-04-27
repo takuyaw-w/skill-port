@@ -1,18 +1,26 @@
 {
   "name": "skill-port",
   "private": true,
-  "type": "module",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "api:dev": "pnpm --filter @skill-port/api dev",
-    "auth:secret": "pnpm dlx @better-auth/cli@latest secret"
+    "auth:secret": "pnpm dlx @better-auth/cli@latest secret",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint apps/api packages && pnpm --filter @skill-port/web lint",
+    "lint:fix": "oxlint apps/api packages --fix && pnpm --filter @skill-port/web lint:fix"
   },
-  "packageManager": "pnpm@10.33.2",
+  "devDependencies": {
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:"
+  },
   "engines": {
     "node": ">=24.0.0"
-  }
+  },
+  "packageManager": "pnpm@10.33.2"
 }

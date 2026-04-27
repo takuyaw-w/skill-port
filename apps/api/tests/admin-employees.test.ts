@@ -7,41 +7,41 @@ import { uniqueEmail } from "./helpers/test-data.js";
 describe("admin employees API", () => {
   beforeEach(async () => {
     await cleanupDatabase();
-  })
+  });
 
   afterEach(async () => {
-    await cleanupDatabase()
-  })
+    await cleanupDatabase();
+  });
 
-  it('admin can create employee and receive invitationUrl', async () => {
-    const adminEmail = uniqueEmail("admin")
-    const adminPassword = "password123"
+  it("admin can create employee and receive invitationUrl", async () => {
+    const adminEmail = uniqueEmail("admin");
+    const adminPassword = "password123";
 
     await createTestUser({
       email: adminEmail,
       password: adminPassword,
       name: "Admin",
-      role: "admin"
-    })
+      role: "admin",
+    });
 
-    const cookie = await loginAndGetCookie(adminEmail, adminPassword)
+    const cookie = await loginAndGetCookie(adminEmail, adminPassword);
 
     const res = await app.request("/api/admin/employees", {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        cookie
+        cookie,
       },
       body: JSON.stringify({
         email: "employee@example.com",
         employeeCode: "EMP001",
         fullName: "Test Employee",
-        displayName: "Employee"
-      })
-    })
+        displayName: "Employee",
+      }),
+    });
 
     expect(res.status).toBe(201);
-    const body = await res.json()
+    const body = await res.json();
 
     expect(body.employee).toMatchObject({
       email: "employee@example.com",
@@ -49,44 +49,44 @@ describe("admin employees API", () => {
       fullName: "Test Employee",
       displayName: "Employee",
       status: "pending_invitation",
-    })
+    });
 
-    expect(body.invitationUrl).toContain("/invitation/")
+    expect(body.invitationUrl).toContain("/invitation/");
   });
 
   it("rejects invalid employee request body", async () => {
-    const adminEmail = uniqueEmail("admin")
-    const adminPassword = "password123"
+    const adminEmail = uniqueEmail("admin");
+    const adminPassword = "password123";
 
     await createTestUser({
       email: adminEmail,
       password: adminPassword,
       name: "Admin",
-      role: "admin"
-    })
+      role: "admin",
+    });
 
-    const cookie = await loginAndGetCookie(adminEmail, adminPassword)
+    const cookie = await loginAndGetCookie(adminEmail, adminPassword);
 
     const res = await app.request("/api/admin/employees", {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        cookie
+        cookie,
       },
       body: JSON.stringify({
         email: "invalid-email",
         employeeCode: "EMP001",
-        fullName: "Test Employee"
+        fullName: "Test Employee",
       }),
     });
 
-    expect(res.status).toBe(400)
+    expect(res.status).toBe(400);
 
     const body = await res.json();
 
     expect(body.error).toBe("Invalid request body");
-    expect(body.issues.length).toBeGreaterThan(0)
-  })
+    expect(body.issues.length).toBeGreaterThan(0);
+  });
 
   it("employee cannot access admin endpoint", async () => {
     const employeeEmail = uniqueEmail("employee");
@@ -110,4 +110,4 @@ describe("admin employees API", () => {
 
     expect(res.status).toBe(403);
   });
-})
+});

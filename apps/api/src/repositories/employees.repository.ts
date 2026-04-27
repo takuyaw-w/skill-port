@@ -43,10 +43,7 @@ export async function createPendingEmployee(
   return employee;
 }
 
-export async function linkEmployeeToUser(
-  input: LinkEmployeeToUserInput,
-  client: DbClient = db,
-) {
+export async function linkEmployeeToUser(input: LinkEmployeeToUserInput, client: DbClient = db) {
   const [employee] = await client
     .update(employees)
     .set({
@@ -59,7 +56,7 @@ export async function linkEmployeeToUser(
   return employee;
 }
 
-export async function findEmployeeByUserId(userId: string, client: DbClient = db,) {
+export async function findEmployeeByUserId(userId: string, client: DbClient = db) {
   const [employee] = await client
     .select({
       id: employees.id,
@@ -74,6 +71,6 @@ export async function findEmployeeByUserId(userId: string, client: DbClient = db
     })
     .from(employees)
     .where(eq(employees.userId, userId))
-    .limit(1)
-  return employee ?? null
+    .limit(1);
+  return employee ?? null;
 }
