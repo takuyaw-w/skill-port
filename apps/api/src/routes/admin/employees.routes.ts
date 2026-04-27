@@ -23,24 +23,14 @@ adminEmployeesRoutes.post("/", async (c) => {
     displayName?: string;
   }>()
 
-  const temporaryPassword = generateTemporaryPassword()
-
-  const result = await auth.api.createUser({
-    body: {
-      email: body.email,
-      password: temporaryPassword,
-      name: body.name,
-      role: "employee"
-    }
-  })
-
   const employeeId = globalThis.crypto.randomUUID()
 
   const [employee] = await db
     .insert(employees)
     .values({
       id: employeeId,
-      userId: result.user.id,
+      userId: null,
+      email: body.email,
       employeeCode: body.employeeCode,
       fullName: body.fullName,
       displayName: body.displayName ?? body.fullName,
@@ -61,12 +51,6 @@ adminEmployeesRoutes.post("/", async (c) => {
   const invitationUrl = `${env.EMPLOYEE_WEB_URL}/invitation/${invitationToken}`
 
   return c.json({
-    user: {
-      id: result.user.id,
-      email: result.user.email,
-      name: result.user.name,
-      role: result.user.role,
-    },
     employee,
     invitationUrl,
   }, 201)

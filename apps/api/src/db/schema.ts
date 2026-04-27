@@ -107,7 +107,10 @@ export const accountRelations = relations(account, ({ one }) => ({
 
 export const employees = appSchema.table('employees', {
   id: uuid("id").primaryKey(),
-  userId: text("user_id").notNull().unique().references(() => user.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  email: text("email").notNull().unique(),
   employeeCode: text("employee_code").notNull().unique(),
   fullName: text("full_name").notNull(),
   displayName: text("display_name").notNull(),
