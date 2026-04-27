@@ -104,3 +104,15 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const employees = appSchema.table('employees', {
+  id: uuid("id").primaryKey(),
+  userId: text("user_id").notNull().unique().references(() => user.id, { onDelete: "cascade" }),
+  employeeCode: text("employee_code").notNull().unique(),
+  fullName: text("full_name").notNull(),
+  displayName: text("display_name").notNull(),
+
+  status: text("status").default('active').notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().$onUpdate(() => new Date()).notNull()
+})

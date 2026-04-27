@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { requireAdmin } from "../middleware/require-admin.js";
+import { adminEmployeesRoutes } from "./admin/employees.routes.js";
 
 export const adminRoutes = new Hono()
 
@@ -11,3 +12,5 @@ adminRoutes.get("/me", async (c) => {
     scope: "admin"
   })
 })
+
+adminRoutes.route("/employees", adminEmployeesRoutes)

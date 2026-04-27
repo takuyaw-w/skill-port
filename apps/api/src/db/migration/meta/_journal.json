@@ -15,6 +15,13 @@
       "when": 1777311865431,
       "tag": "0001_equal_kronos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777312892157,
+      "tag": "0002_little_mephistopheles",
+      "breakpoints": true
     }
   ]
 }
