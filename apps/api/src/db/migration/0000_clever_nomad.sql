@@ -1,7 +1,7 @@
 CREATE SCHEMA "app";
 --> statement-breakpoint
 CREATE TABLE "app"."health_checks" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"message" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -58,7 +58,7 @@ CREATE TABLE "app"."verification" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."employees" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text,
 	"email" text NOT NULL,
 	"employee_code" text NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE "app"."employees" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."employee_invitation_tokens" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"employee_id" uuid NOT NULL,
 	"token_hash" text NOT NULL,
 	"status" text DEFAULT 'pending' NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE "app"."employee_invitation_tokens" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_option_aliases" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"skill_option_id" uuid NOT NULL,
 	"alias_name" text NOT NULL,
 	"alias_normalized_name" text NOT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE "app"."skill_option_aliases" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_options" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"category" text NOT NULL,
 	"name" text NOT NULL,
 	"normalized_name" text NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE "app"."skill_options" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheet_certifications" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"skill_sheet_id" uuid NOT NULL,
 	"name" text NOT NULL,
 	"sort_order" integer DEFAULT 0 NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE "app"."skill_sheet_certifications" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheet_project_phases" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
 	"phase" text NOT NULL,
 	"sort_order" integer DEFAULT 0 NOT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE "app"."skill_sheet_project_phases" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheet_project_technologies" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"project_id" uuid NOT NULL,
 	"skill_option_id" uuid,
 	"category" text NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE "app"."skill_sheet_project_technologies" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheet_projects" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"skill_sheet_id" uuid NOT NULL,
 	"start_year_month" text NOT NULL,
 	"end_year_month" text,
@@ -154,7 +154,7 @@ CREATE TABLE "app"."skill_sheet_projects" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheet_skills" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"skill_sheet_id" uuid NOT NULL,
 	"skill_option_id" uuid,
 	"category" text NOT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE "app"."skill_sheet_skills" (
 );
 --> statement-breakpoint
 CREATE TABLE "app"."skill_sheets" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"employee_id" uuid NOT NULL,
 	"public_initials" text NOT NULL,
 	"nearest_station" text,

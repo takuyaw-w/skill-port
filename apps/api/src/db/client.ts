@@ -8,3 +8,7 @@ export const pool = new Pool({
 });
 
 export const db = drizzle({ client: pool, schema });
+
+export type Db = typeof db;
+export type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+export type DbClient = Db | Transaction;

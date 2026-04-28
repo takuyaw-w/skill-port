@@ -1,12 +1,10 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "../db/client.js";
+import type { DbClient, Transaction } from "../db/client.js";
 import { employees } from "../db/schema.js";
 import type { EmployeeGender } from "../const/employee-gender.js";
 import { EmployeeGender as EmployeeGenderValue } from "../const/employee-gender.js";
-
-type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
-type DbClient = typeof db | Transaction;
 
 type CreatePendingEmployeeInput = {
   email: string;
@@ -54,10 +52,7 @@ export async function createPendingEmployee(
     values.birthDate = input.birthDate;
   }
 
-  const [employee] = await client
-    .insert(employees)
-    .values(values)
-    .returning();
+  const [employee] = await client.insert(employees).values(values).returning();
 
   return employee;
 }

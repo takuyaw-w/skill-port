@@ -1,10 +1,8 @@
 import { and, eq, gt } from "drizzle-orm";
 
 import { db } from "../db/client.js";
+import type { DbClient, Transaction } from "../db/client.js";
 import { employeeInvitationTokens, employees } from "../db/schema.js";
-
-type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
-type DbClient = typeof db | Transaction;
 
 type CreateEmployeeInvitationTokenInput = {
   employeeId: string;

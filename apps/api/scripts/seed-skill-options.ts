@@ -334,12 +334,7 @@ const skillOptionSeeds: SkillOptionSeed[] = [
 ];
 
 function normalizeAliasName(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replaceAll(".", "")
-    .replaceAll(" ", "_")
-    .replaceAll("-", "_");
+  return value.trim().toLowerCase().replaceAll(".", "").replaceAll(" ", "_").replaceAll("-", "_");
 }
 
 async function upsertSkillOption(seed: SkillOptionSeed) {
