@@ -167,8 +167,6 @@ Table app.employees {
   family_name_kana text [note: '姓カナ。例: ナカジマ']
   given_name_kana text [note: '名カナ。例: タクヤ']
 
-  display_name text [not null, note: '管理画面表示名。family_name + given_name から生成してもよい']
-
   birth_date date [note: '生年月日。年齢は保存せず表示時に計算する']
   gender employee_gender [not null, default: 'no_answer']
 
