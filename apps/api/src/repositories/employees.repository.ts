@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "../db/client.js";
-import type { DbClient, Transaction } from "../db/client.js";
+import type { DbClient } from "../db/client.js";
 import { employees } from "../db/schema.js";
 import type { EmployeeGender } from "../const/employee-gender.js";
 import { EmployeeGender as EmployeeGenderValue } from "../const/employee-gender.js";

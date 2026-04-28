@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
-import type { DbClient, Transaction } from "../db/client.js";
+import type { DbClient } from "../db/client.js";
 import { skillSheetProjects } from "../db/schema.js";
 
 export async function findSkillSheetProjectsBySkillSheetId(

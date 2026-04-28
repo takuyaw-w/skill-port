@@ -1,8 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/client.js";
-import type { DbClient, Transaction } from "../db/client.js";
+import type { DbClient } from "../db/client.js";
 import {
-  skillSheetCertifications,
   skillSheetProjectPhases,
   skillSheetProjects,
   skillSheetProjectTechnologies,
