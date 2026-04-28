@@ -16,6 +16,13 @@ import { findSkillSheetProjectPhasesByProjectIds } from "./skill-sheet-project-p
 type SkillSheetProject = typeof skillSheetProjects.$inferSelect;
 type SkillSheetProjectTechnology = typeof skillSheetProjectTechnologies.$inferSelect;
 type SkillSheetProjectPhase = typeof skillSheetProjectPhases.$inferSelect;
+type UpsertSkillSheetInput = {
+  employeeId: string;
+  publicInitials: string;
+  nearestStation?: string;
+  experienceLabel?: string;
+  selfPr?: string;
+};
 
 function attachProjectChildren(
   projects: SkillSheetProject[],
@@ -59,4 +66,34 @@ export async function findSkillSheetByEmployeeId(employeeId: string, client: DbC
     skills,
     projects: attachProjectChildren(projects, technologies, phases),
   };
+}
+
+export async function upsertSkillSheetByEmployeeId(
+  input: UpsertSkillSheetInput,
+  client: DbClient = db
+) {
+  const values: typeof skillSheets.$inferInsert = {
+    employeeId: input.employeeId,
+    publicInitials: input.publicInitials,
+    nearestStation: input.nearestStation,
+    experienceLabel: input.experienceLabel,
+    selfPr: input.selfPr
+  }
+
+  const [skillSheet] = await client
+    .insert(skillSheets)
+    .values(values)
+    .onConflictDoUpdate({
+      target: skillSheets.employeeId,
+      set: {
+        publicInitials: input.publicInitials,
+        nearestStation: input.nearestStation,
+        experienceLabel: input.experienceLabel,
+        selfPr: input.selfPr,
+        updatedAt: new Date()
+      },
+    })
+    .returning()
+
+  return skillSheet
 }
