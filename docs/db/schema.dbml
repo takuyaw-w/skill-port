@@ -1,0 +1,439 @@
+Project skill_port {
+  database_type: 'PostgreSQL'
+  Note: 'SES企業向けスキルシート管理アプリ。既存リポジトリの app schema + スキルシート業務テーブル統合版。'
+}
+
+// ----------------------------------------
+// Enums
+// ----------------------------------------
+
+Enum user_role {
+  admin
+  employee
+}
+
+Enum employee_status {
+  active
+  inactive
+}
+
+Enum employee_gender {
+  male
+  female
+  other
+  no_answer
+}
+
+Enum invitation_token_status {
+  pending
+  accepted
+  expired
+  revoked
+}
+
+Enum project_role {
+  leader
+  member
+  other
+}
+
+Enum skill_option_category {
+  language
+  framework
+  database
+  operating_system
+  cloud_service
+  server_os
+  tool
+  web_server
+  application_server
+  middleware
+  other
+}
+
+Enum project_phase {
+  requirements_definition
+  basic_design
+  detail_design
+  implementation
+  unit_test
+  integration_test
+  system_test
+  acceptance_test
+  release
+  operation_maintenance
+}
+
+// ----------------------------------------
+// Existing: Better Auth Tables
+// Current repository: apps/api/src/db/schema/auth.ts
+// ----------------------------------------
+
+Table app.user {
+  id text [pk, not null]
+
+  name text [not null]
+  email text [not null, unique]
+  email_verified boolean [not null, default: false]
+  image text
+
+  role user_role [not null, default: 'employee', note: 'Better Auth Admin pluginのrole想定']
+  banned boolean [not null, default: false]
+  ban_expires timestamptz
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    email [unique]
+    role
+  }
+}
+
+Table app.session {
+  id text [pk, not null]
+
+  expires_at timestamptz [not null]
+  token text [not null, unique]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null]
+
+  ip_address text
+  user_agent text
+
+  user_id text [not null]
+
+  indexes {
+    token [unique]
+    user_id [name: 'session_userId_idx']
+  }
+}
+
+Table app.account {
+  id text [pk, not null]
+
+  account_id text [not null]
+  provider_id text [not null]
+  user_id text [not null]
+
+  access_token text
+  refresh_token text
+  id_token text
+  access_token_expires_at timestamptz
+  refresh_token_expires_at timestamptz
+  scope text
+  password text
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null]
+
+  indexes {
+    user_id [name: 'account_userId_idx']
+  }
+}
+
+Table app.verification {
+  id text [pk, not null]
+
+  identifier text [not null]
+  value text [not null]
+  expires_at timestamptz [not null]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    identifier [name: 'verification_identifier_idx']
+  }
+}
+
+// ----------------------------------------
+// Existing + Revised: Employee
+// Current repository has full_name/display_name.
+// This draft replaces full_name with family/given columns,
+// while keeping display_name for current compatibility.
+// ----------------------------------------
+
+Table app.employees {
+  id uuid [pk, not null]
+
+  user_id text [unique, note: 'Better Auth app.user.id。招待承諾前は null になり得る']
+  email text [not null, unique]
+  employee_code text [not null, unique, note: '社員番号']
+
+  family_name text [not null, note: '姓。例: 中島']
+  given_name text [not null, note: '名。例: 拓也']
+  family_name_kana text [note: '姓カナ。例: ナカジマ']
+  given_name_kana text [note: '名カナ。例: タクヤ']
+
+  display_name text [not null, note: '管理画面表示名。family_name + given_name から生成してもよい']
+
+  birth_date date [note: '生年月日。年齢は保存せず表示時に計算する']
+  gender employee_gender [not null, default: 'no_answer']
+
+  status employee_status [not null, default: 'active']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    user_id [unique]
+    email [unique]
+    employee_code [unique]
+    status
+    (family_name_kana, given_name_kana)
+  }
+}
+
+// ----------------------------------------
+// Existing: Invitation Tokens
+// Current repository: apps/api/src/db/schema/employee-invitation-tokens.ts
+// ----------------------------------------
+
+Table app.employee_invitation_tokens {
+  id uuid [pk, not null]
+
+  employee_id uuid [not null]
+
+  token_hash text [not null, unique]
+  status invitation_token_status [not null, default: 'pending']
+
+  expires_at timestamptz [not null]
+  used_at timestamptz
+
+  created_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    employee_id [name: 'employee_invitation_tokens_employee_id_idx']
+    token_hash [unique]
+    status
+    expires_at
+  }
+}
+
+// ----------------------------------------
+// Existing: Health Check
+// Current repository: apps/api/src/db/schema/health-checks.ts
+// ----------------------------------------
+
+Table app.health_checks {
+  id uuid [pk, not null]
+  message text [not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+// ----------------------------------------
+// New: Skill Option Master
+// 選択式UI・サジェスト・表記揺れ吸収用
+// ----------------------------------------
+
+Table app.skill_options {
+  id uuid [pk, not null]
+
+  category skill_option_category [not null]
+  name text [not null, note: '表示名。例: JavaScript, Vue.js, PostgreSQL']
+  normalized_name text [not null, note: '検索・重複判定用。例: javascript, vue, postgresql']
+
+  description text [note: '管理用メモ']
+  sort_order integer [not null, default: 0]
+  is_active boolean [not null, default: true, note: 'false の場合、新規入力候補には表示しない']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    category
+    normalized_name
+    is_active
+    (category, normalized_name) [unique]
+    (category, sort_order)
+  }
+}
+
+Table app.skill_option_aliases {
+  id uuid [pk, not null]
+
+  skill_option_id uuid [not null]
+
+  alias_name text [not null, note: '別名。例: JS, Javascript']
+  alias_normalized_name text [not null, note: '別名の正規化値。例: javascript']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    skill_option_id
+    alias_normalized_name
+    (skill_option_id, alias_normalized_name) [unique]
+  }
+}
+
+// ----------------------------------------
+// New: Skill Sheet
+// 従業員1人につき1件の現行スキルシート
+// ----------------------------------------
+
+Table app.skill_sheets {
+  id uuid [pk, not null]
+
+  employee_id uuid [not null, unique, note: '従業員1人につきスキルシート1件']
+
+  public_initials text [not null, note: '顧客提出PDF用の匿名表示。例: N.T.']
+  nearest_station text [note: '最寄り駅']
+  experience_label text [note: '経験年数の表示用。例: 約5年']
+  self_pr text [note: '自己PR']
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    employee_id [unique]
+  }
+}
+
+Table app.skill_sheet_certifications {
+  id uuid [pk, not null]
+
+  skill_sheet_id uuid [not null]
+  name text [not null, note: '資格名']
+  sort_order integer [not null, default: 0]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    skill_sheet_id
+    (skill_sheet_id, sort_order)
+  }
+}
+
+Table app.skill_sheet_skills {
+  id uuid [pk, not null]
+
+  skill_sheet_id uuid [not null]
+
+  skill_option_id uuid [note: 'マスタ選択の場合は app.skill_options.id。自由入力の場合は null']
+
+  category skill_option_category [not null]
+  name text [not null, note: '表示用スナップショット。例: JavaScript']
+  normalized_name text [note: '検索用スナップショット。例: javascript']
+
+  sort_order integer [not null, default: 0]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    skill_sheet_id
+    skill_option_id
+    category
+    normalized_name
+    (skill_sheet_id, category)
+    (skill_sheet_id, category, sort_order)
+  }
+}
+
+// ----------------------------------------
+// New: Projects
+// ----------------------------------------
+
+Table app.skill_sheet_projects {
+  id uuid [pk, not null]
+
+  skill_sheet_id uuid [not null]
+
+  start_year_month text [not null, note: '開始年月。YYYY-MM形式。例: 2020-01']
+  end_year_month text [note: '終了年月。YYYY-MM形式。現在参画中の場合は null']
+
+  name text [not null, note: 'プロジェクト名']
+  summary text [note: '業務概要']
+  responsibilities text [note: '担当業務']
+
+  role project_role [note: 'プロジェクト上の役割']
+  team_size integer [note: '参画人数']
+
+  sort_order integer [not null, default: 0]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    skill_sheet_id
+    start_year_month
+    end_year_month
+    (skill_sheet_id, sort_order)
+  }
+}
+
+Table app.skill_sheet_project_technologies {
+  id uuid [pk, not null]
+
+  project_id uuid [not null]
+
+  skill_option_id uuid [note: 'マスタ選択の場合は app.skill_options.id。自由入力の場合は null']
+
+  category skill_option_category [not null]
+  name text [not null, note: '表示用スナップショット。例: PostgreSQL, Docker, Laravel']
+  normalized_name text [note: '検索用スナップショット']
+
+  sort_order integer [not null, default: 0]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    project_id
+    skill_option_id
+    category
+    normalized_name
+    (project_id, category)
+    (project_id, category, sort_order)
+  }
+}
+
+Table app.skill_sheet_project_phases {
+  id uuid [pk, not null]
+
+  project_id uuid [not null]
+
+  phase project_phase [not null]
+  sort_order integer [not null, default: 0]
+
+  created_at timestamptz [not null, default: `now()`]
+  updated_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    project_id
+    phase
+    (project_id, sort_order)
+    (project_id, phase) [unique]
+  }
+}
+
+// ----------------------------------------
+// References
+// ----------------------------------------
+
+Ref: app.session.user_id > app.user.id [delete: cascade]
+Ref: app.account.user_id > app.user.id [delete: cascade]
+
+Ref: app.employees.user_id > app.user.id [delete: cascade]
+
+Ref: app.employee_invitation_tokens.employee_id > app.employees.id [delete: cascade]
+
+Ref: app.skill_option_aliases.skill_option_id > app.skill_options.id [delete: cascade]
+
+Ref: app.skill_sheets.employee_id > app.employees.id [delete: cascade]
+
+Ref: app.skill_sheet_certifications.skill_sheet_id > app.skill_sheets.id [delete: cascade]
+
+Ref: app.skill_sheet_skills.skill_sheet_id > app.skill_sheets.id [delete: cascade]
+Ref: app.skill_sheet_skills.skill_option_id > app.skill_options.id [delete: set null]
+
+Ref: app.skill_sheet_projects.skill_sheet_id > app.skill_sheets.id [delete: cascade]
+
+Ref: app.skill_sheet_project_technologies.project_id > app.skill_sheet_projects.id [delete: cascade]
+Ref: app.skill_sheet_project_technologies.skill_option_id > app.skill_options.id [delete: set null]
+
+Ref: app.skill_sheet_project_phases.project_id > app.skill_sheet_projects.id [delete: cascade]
