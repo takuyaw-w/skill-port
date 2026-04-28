@@ -9,7 +9,6 @@ type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type DbClient = typeof db | Transaction;
 
 type CreatePendingEmployeeInput = {
-  id: string;
   email: string;
   employeeCode: string;
   familyName: string;
@@ -34,7 +33,6 @@ export async function createPendingEmployee(
   client: DbClient = db,
 ) {
   const values: typeof employees.$inferInsert = {
-    id: input.id,
     userId: null,
     email: input.email,
     employeeCode: input.employeeCode,

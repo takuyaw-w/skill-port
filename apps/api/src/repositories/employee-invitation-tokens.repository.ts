@@ -7,7 +7,6 @@ type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type DbClient = typeof db | Transaction;
 
 type CreateEmployeeInvitationTokenInput = {
-  id: string;
   employeeId: string;
   tokenHash: string;
   expiresAt: Date;
@@ -24,7 +23,6 @@ export async function createEmployeeInvitationToken(
   const [invitationToken] = await client
     .insert(employeeInvitationTokens)
     .values({
-      id: input.id,
       employeeId: input.employeeId,
       tokenHash: input.tokenHash,
       status: "pending",

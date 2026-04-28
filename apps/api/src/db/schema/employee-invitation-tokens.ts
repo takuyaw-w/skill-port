@@ -6,7 +6,7 @@ import { employees } from "./employees.js";
 export const employeeInvitationTokens = appSchema.table(
   "employee_invitation_tokens",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     employeeId: uuid("employee_id")
       .notNull()

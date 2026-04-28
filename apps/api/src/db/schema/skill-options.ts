@@ -4,7 +4,7 @@ import { appSchema } from "./app-schema.js";
 export const skillOptions = appSchema.table(
   "skill_options",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     category: text("category").notNull(),
     name: text("name").notNull(),
@@ -35,7 +35,7 @@ export const skillOptions = appSchema.table(
 export const skillOptionAliases = appSchema.table(
   "skill_option_aliases",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     skillOptionId: uuid("skill_option_id")
       .notNull()

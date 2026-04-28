@@ -5,7 +5,7 @@ import { employees } from "./employees.js";
 import { skillOptions } from "./skill-options.js";
 
 export const skillSheets = appSchema.table("skill_sheets", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
 
   employeeId: uuid("employee_id")
     .notNull()
@@ -27,7 +27,7 @@ export const skillSheets = appSchema.table("skill_sheets", {
 export const skillSheetCertifications = appSchema.table(
   "skill_sheet_certifications",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     skillSheetId: uuid("skill_sheet_id")
       .notNull()
@@ -54,7 +54,7 @@ export const skillSheetCertifications = appSchema.table(
 export const skillSheetSkills = appSchema.table(
   "skill_sheet_skills",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     skillSheetId: uuid("skill_sheet_id")
       .notNull()
@@ -93,7 +93,7 @@ export const skillSheetSkills = appSchema.table(
 export const skillSheetProjects = appSchema.table(
   "skill_sheet_projects",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     skillSheetId: uuid("skill_sheet_id")
       .notNull()
@@ -128,7 +128,7 @@ export const skillSheetProjects = appSchema.table(
 export const skillSheetProjectTechnologies = appSchema.table(
   "skill_sheet_project_technologies",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     projectId: uuid("project_id")
       .notNull()
@@ -170,7 +170,7 @@ export const skillSheetProjectTechnologies = appSchema.table(
 export const skillSheetProjectPhases = appSchema.table(
   "skill_sheet_project_phases",
   {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
 
     projectId: uuid("project_id")
       .notNull()

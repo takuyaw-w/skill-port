@@ -4,7 +4,7 @@ import { appSchema } from "./app-schema.js";
 import { user } from "./auth.js";
 
 export const employees = appSchema.table("employees", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
 
   userId: text("user_id")
     .unique()

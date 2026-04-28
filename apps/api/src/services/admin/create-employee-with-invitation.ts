@@ -10,13 +10,11 @@ import { createPendingEmployee } from "../../repositories/employees.repository.j
 import type { CreateEmployeeRequest } from "../../schemas/admin/employees.requests.js";
 
 export async function createEmployeeWithInvitation(input: CreateEmployeeRequest) {
-  const employeeId = globalThis.crypto.randomUUID();
   const invitationToken = generateInvitationToken();
 
   const employee = await db.transaction(async (tx) => {
     const createdEmployee = await createPendingEmployee(
       {
-        id: employeeId,
         email: input.email,
         employeeCode: input.employeeCode,
         familyName: input.familyName,
@@ -31,8 +29,7 @@ export async function createEmployeeWithInvitation(input: CreateEmployeeRequest)
 
     await createEmployeeInvitationToken(
       {
-        id: globalThis.crypto.randomUUID(),
-        employeeId,
+        employeeId: createdEmployee.id,
         tokenHash: hashInvitationToken(invitationToken),
         expiresAt: createInvitationExpiresAt(),
       },

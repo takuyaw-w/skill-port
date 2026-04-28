@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import { db, pool } from "../src/db/client.js";
 import { skillOptionAliases, skillOptions } from "../src/db/schema.js";
 
@@ -348,7 +346,6 @@ async function upsertSkillOption(seed: SkillOptionSeed) {
   const [option] = await db
     .insert(skillOptions)
     .values({
-      id: randomUUID(),
       category: seed.category,
       name: seed.name,
       normalizedName: seed.normalizedName,
@@ -382,7 +379,6 @@ async function seedAliases(skillOptionId: string, aliases: string[] = []) {
     await db
       .insert(skillOptionAliases)
       .values({
-        id: randomUUID(),
         skillOptionId,
         aliasName,
         aliasNormalizedName: normalizeAliasName(aliasName),
