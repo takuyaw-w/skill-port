@@ -30,8 +30,12 @@ invitationRoutes.get("/:token", async (c) => {
     employee: {
       id: invitation.employeeId,
       employeeCode: invitation.employeeCode,
-      fullName: invitation.fullName,
-      displayName: invitation.displayName,
+      familyName: invitation.familyName,
+      givenName: invitation.givenName,
+      familyNameKana: invitation.familyNameKana,
+      givenNameKana: invitation.givenNameKana,
+      birthDate: invitation.birthDate,
+      gender: invitation.gender,
       status: invitation.employeeStatus,
     },
   });

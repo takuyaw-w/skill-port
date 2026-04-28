@@ -35,8 +35,11 @@ describe("admin employees API", () => {
       body: JSON.stringify({
         email: "employee@example.com",
         employeeCode: "EMP001",
-        fullName: "Test Employee",
-        displayName: "Employee",
+        familyName: "Test",
+        givenName: "Employee",
+        familyNameKana: "テスト",
+        givenNameKana: "エンプロイー",
+        gender: 1,
       }),
     });
 
@@ -46,8 +49,11 @@ describe("admin employees API", () => {
     expect(body.employee).toMatchObject({
       email: "employee@example.com",
       employeeCode: "EMP001",
-      fullName: "Test Employee",
-      displayName: "Employee",
+      familyName: "Test",
+      givenName: "Employee",
+      familyNameKana: "テスト",
+      givenNameKana: "エンプロイー",
+      gender: 1,
       status: "pending_invitation",
     });
 
@@ -76,7 +82,8 @@ describe("admin employees API", () => {
       body: JSON.stringify({
         email: "invalid-email",
         employeeCode: "EMP001",
-        fullName: "Test Employee",
+        familyName: "Test",
+        givenName: "Employee",
       }),
     });
 

@@ -44,8 +44,11 @@ describe("invitations API", () => {
       body: JSON.stringify({
         email: employeeEmail,
         employeeCode: "EMP001",
-        fullName: "Test Employee",
-        displayName: "Employee",
+        familyName: "Test",
+        givenName: "Employee",
+        familyNameKana: "テスト",
+        givenNameKana: "エンプロイー",
+        gender: 1,
       }),
     });
 
@@ -66,8 +69,11 @@ describe("invitations API", () => {
 
     expect(invitationBody.employee).toMatchObject({
       employeeCode: "EMP001",
-      fullName: "Test Employee",
-      displayName: "Employee",
+      familyName: "Test",
+      givenName: "Employee",
+      familyNameKana: "テスト",
+      givenNameKana: "エンプロイー",
+      gender: 1,
       status: "pending_invitation",
     });
 
@@ -93,8 +99,11 @@ describe("invitations API", () => {
     expect(acceptBody.employee).toMatchObject({
       email: employeeEmail,
       employeeCode: "EMP001",
-      fullName: "Test Employee",
-      displayName: "Employee",
+      familyName: "Test",
+      givenName: "Employee",
+      familyNameKana: "テスト",
+      givenNameKana: "エンプロイー",
+      gender: 1,
       status: "active",
     });
 
@@ -125,8 +134,11 @@ describe("invitations API", () => {
     expect(employeeMeBody.employee).toMatchObject({
       email: employeeEmail,
       employeeCode: "EMP001",
-      fullName: "Test Employee",
-      displayName: "Employee",
+      familyName: "Test",
+      givenName: "Employee",
+      familyNameKana: "テスト",
+      givenNameKana: "エンプロイー",
+      gender: 1,
       status: "active",
     });
 

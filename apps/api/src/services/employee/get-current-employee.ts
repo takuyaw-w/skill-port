@@ -8,8 +8,12 @@ type GetCurrentEmployeeResult =
         userId: string | null;
         email: string;
         employeeCode: string;
-        fullName: string;
-        displayName: string;
+        familyName: string;
+        givenName: string;
+        familyNameKana: string | null;
+        givenNameKana: string | null;
+        birthDate: string | null;
+        gender: number;
         status: string;
         createdAt: Date;
         updatedAt: Date;

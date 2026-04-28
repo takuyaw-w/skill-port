@@ -7,6 +7,7 @@ import {
 } from "../../repositories/employee-invitation-tokens.repository.js";
 import { linkEmployeeToUser } from "../../repositories/employees.repository.js";
 import type { AcceptInvitationRequest } from "../../schemas/invitations.requests.js";
+import { formatEmployeeName } from "../../shared/employee/format-employee-name.js";
 
 type AcceptInvitationErrorCode =
   | "INVITATION_NOT_FOUND_OR_EXPIRED"
@@ -27,8 +28,12 @@ type AcceptInvitationResult =
           id: string;
           employeeCode: string;
           email: string;
-          fullName: string;
-          displayName: string;
+          familyName: string;
+          givenName: string;
+          familyNameKana: string | null;
+          givenNameKana: string | null;
+          birthDate: string | null;
+          gender: number;
           status: "active";
         };
       };
@@ -67,11 +72,16 @@ export async function acceptInvitation(
     };
   }
 
+  const employeeName = formatEmployeeName({
+    familyName: invitation.familyName,
+    givenName: invitation.givenName,
+  });
+
   const createdUser = await auth.api.createUser({
     body: {
       email: invitation.email,
       password: input.password,
-      name: invitation.fullName,
+      name: employeeName,
       role: "employee",
     },
   });
@@ -106,8 +116,12 @@ export async function acceptInvitation(
         id: invitation.employeeId,
         employeeCode: invitation.employeeCode,
         email: invitation.email,
-        fullName: invitation.fullName,
-        displayName: invitation.displayName,
+        familyName: invitation.familyName,
+        givenName: invitation.givenName,
+        familyNameKana: invitation.familyNameKana,
+        givenNameKana: invitation.givenNameKana,
+        birthDate: invitation.birthDate,
+        gender: invitation.gender,
         status: "active",
       },
     },

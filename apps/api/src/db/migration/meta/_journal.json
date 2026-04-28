@@ -43,6 +43,13 @@
       "when": 1777317649445,
       "tag": "0005_panoramic_network",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777406993777,
+      "tag": "0006_nebulous_ricochet",
+      "breakpoints": true
     }
   ]
 }

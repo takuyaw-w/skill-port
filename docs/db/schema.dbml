@@ -158,19 +158,19 @@ Table app.verification {
 Table app.employees {
   id uuid [pk, not null]
 
-  user_id text [unique, note: 'Better Auth app.user.id。招待承諾前は null になり得る']
+  user_id text [unique, note: 'Better Auth app.user.id。招待承諾前は null']
   email text [not null, unique]
-  employee_code text [not null, unique, note: '社員番号']
+  employee_code text [not null, unique]
 
-  family_name text [not null, note: '姓。例: 中島']
-  given_name text [not null, note: '名。例: 拓也']
-  family_name_kana text [note: '姓カナ。例: ナカジマ']
-  given_name_kana text [note: '名カナ。例: タクヤ']
+  family_name text [not null, note: '姓']
+  given_name text [not null, note: '名']
+  family_name_kana text [note: '姓カナ']
+  given_name_kana text [note: '名カナ']
 
   birth_date date [note: '生年月日。年齢は保存せず表示時に計算する']
-  gender employee_gender [not null, default: 'no_answer']
+  gender smallint [not null, default: 0, note: '0=未回答, 1=男性, 2=女性, 3=その他']
 
-  status employee_status [not null, default: 'active']
+  status text [not null, default: 'active']
 
   created_at timestamptz [not null, default: `now()`]
   updated_at timestamptz [not null, default: `now()`]
