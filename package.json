@@ -13,6 +13,7 @@
     "api:db:generate": "pnpm --filter @skill-port/api db:generate",
     "api:db:migrate": "pnpm --filter @skill-port/api db:migrate",
     "api:db:studio": "pnpm --filter @skill-port/api db:studio",
+    "api:db:seed": "pnpm --filter @skill-port/api db:seed",
     "auth:secret": "pnpm dlx @better-auth/cli@latest secret",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
