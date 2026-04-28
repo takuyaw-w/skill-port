@@ -5,50 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1777310429921,
-      "tag": "0000_gifted_centennial",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1777311865431,
-      "tag": "0001_equal_kronos",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1777312892157,
-      "tag": "0002_little_mephistopheles",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1777313371615,
-      "tag": "0003_sad_xorn",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1777314436424,
-      "tag": "0004_overjoyed_invaders",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1777317649445,
-      "tag": "0005_panoramic_network",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1777406993777,
-      "tag": "0006_nebulous_ricochet",
+      "when": 1777408374057,
+      "tag": "0000_young_the_hand",
       "breakpoints": true
     }
   ]

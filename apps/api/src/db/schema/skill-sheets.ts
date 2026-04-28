@@ -4,29 +4,25 @@ import { appSchema } from "./app-schema.js";
 import { employees } from "./employees.js";
 import { skillOptions } from "./skill-options.js";
 
-export const skillSheets = appSchema.table(
-  "skill_sheets",
-  {
-    id: uuid("id").primaryKey(),
+export const skillSheets = appSchema.table("skill_sheets", {
+  id: uuid("id").primaryKey(),
 
-    employeeId: uuid("employee_id")
-      .notNull()
-      .unique()
-      .references(() => employees.id, { onDelete: "cascade" }),
+  employeeId: uuid("employee_id")
+    .notNull()
+    .unique()
+    .references(() => employees.id, { onDelete: "cascade" }),
 
-    publicInitials: text("public_initials").notNull(),
-    nearestStation: text("nearest_station"),
-    experienceLabel: text("experience_label"),
-    selfPr: text("self_pr"),
+  publicInitials: text("public_initials").notNull(),
+  nearestStation: text("nearest_station"),
+  experienceLabel: text("experience_label"),
+  selfPr: text("self_pr"),
 
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .defaultNow()
-      .$onUpdate(() => new Date())
-      .notNull(),
-  },
-  (table) => [uniqueIndex("skill_sheets_employee_id_unique").on(table.employeeId)],
-);
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
 
 export const skillSheetCertifications = appSchema.table(
   "skill_sheet_certifications",

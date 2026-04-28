@@ -1,1 +1,0 @@
-ALTER TABLE "app"."employees" ALTER COLUMN "created_at" SET NOT NULL;
