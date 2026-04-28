@@ -1,5 +1,7 @@
 FROM node:24-bookworm-slim
 
+ARG PNPM_VERSION=11.0.0
+
 ENV PNPM_HOME="/home/node/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV NPM_CONFIG_STORE_DIR="/home/node/.local/share/pnpm/store"
@@ -29,6 +31,6 @@ RUN corepack enable
 USER node
 
 # pnpm 本体は node ユーザーの Corepack cache に用意する
-RUN corepack prepare pnpm@10.33.2 --activate
+RUN corepack prepare "pnpm@${PNPM_VERSION}" --activate
 
 CMD ["sleep", "infinity"]
