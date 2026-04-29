@@ -9,14 +9,21 @@ import { listEmployees } from "../../services/admin/list-employees.js";
 import { zodErrorResponse } from "../../shared/validation/zod-error-response.js";
 import { getEmployeeSkillSheetParamSchema } from "../../schemas/admin/employee-skill-sheet.requests.js";
 import { getEmployeeSkillSheet } from "../../services/admin/get-employee-skill-sheet.js";
+import {
+  presentAdminEmployee,
+  presentEmployee,
+  presentEmployees,
+} from "../../presenters/employees.presenter.js";
+import { presentSkillSheet } from "../../presenters/skill-sheets.presenter.js";
+import { createdResponse, errorResponse, jsonResponse } from "../../shared/http/json-response.js";
 
 export const adminEmployeesRoutes = new Hono();
 
 adminEmployeesRoutes.get("/", async (c) => {
   const employees = await listEmployees();
 
-  return c.json({
-    employees,
+  return jsonResponse(c, {
+    employees: presentEmployees(employees),
   });
 });
 
@@ -32,7 +39,10 @@ adminEmployeesRoutes.post(
 
     const result = await createEmployeeWithInvitation(body);
 
-    return c.json(result, 201);
+    return createdResponse(c, {
+      employee: presentAdminEmployee(result.employee),
+      invitationUrl: result.invitationUrl,
+    });
   },
 );
 
@@ -50,14 +60,13 @@ adminEmployeesRoutes.get(
     if (!result.ok) {
       switch (result.error) {
         case "EMPLOYEE_NOT_FOUND":
-          return c.json({ error: "Employee not found" }, 404);
+          return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
       }
     }
 
-    return c.json({
-      status: "ok",
-      employee: result.employee,
-      skillSheet: result.skillSheet,
+    return jsonResponse(c, {
+      employee: presentEmployee(result.employee),
+      skillSheet: presentSkillSheet(result.skillSheet),
     });
   },
 );

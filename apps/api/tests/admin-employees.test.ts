@@ -93,8 +93,11 @@ describe("admin employees API", () => {
 
     const body = await res.json();
 
-    expect(body.error).toBe("Invalid request body");
-    expect(body.issues.length).toBeGreaterThan(0);
+    expect(body.error).toMatchObject({
+      code: "VALIDATION_ERROR",
+      message: "Invalid request body",
+    });
+    expect(body.error.issues.length).toBeGreaterThan(0);
   });
 
   it("employee cannot access admin endpoint", async () => {

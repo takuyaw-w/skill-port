@@ -1,5 +1,7 @@
 import type { Context, Next } from "hono";
+
 import { auth } from "../auth/auth.js";
+import { errorResponse } from "../shared/http/json-response.js";
 
 export async function requireAdmin(c: Context, next: Next) {
   const session = await auth.api.getSession({
@@ -7,16 +9,11 @@ export async function requireAdmin(c: Context, next: Next) {
   });
 
   if (!session) {
-    return c.json({ error: "Unauthorized" }, 401);
+    return errorResponse(c, 401, "UNAUTHORIZED", "Unauthorized");
   }
 
   if (session.user.role !== "admin") {
-    return c.json(
-      {
-        error: "Forbidden",
-      },
-      403,
-    );
+    return errorResponse(c, 403, "FORBIDDEN", "Forbidden");
   }
 
   return next();

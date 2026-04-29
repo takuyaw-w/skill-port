@@ -7,6 +7,10 @@ import { zValidator } from "@hono/zod-validator";
 import { saveSkillSheetRequestSchema } from "../schemas/employee/skill-sheet.requests.js";
 import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
 import { saveCurrentEmployeeSkillSheet } from "../services/employee/save-current-employee-skill-sheet.js";
+import { presentAuthUser } from "../presenters/auth.presenter.js";
+import { presentEmployee } from "../presenters/employees.presenter.js";
+import { presentSkillSheet } from "../presenters/skill-sheets.presenter.js";
+import { errorResponse, jsonResponse } from "../shared/http/json-response.js";
 
 export const employeeRoutes = new Hono<{ Variables: AppVariables }>();
 
@@ -18,29 +22,12 @@ employeeRoutes.get("/me", async (c) => {
   const result = await getCurrentEmployee(user.id);
 
   if (!result.ok) {
-    return c.json({ error: "Employee not found" }, 404);
+    return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
   }
 
-  return c.json({
-    status: "ok",
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    },
-    employee: {
-      id: result.employee.id,
-      employeeCode: result.employee.employeeCode,
-      email: result.employee.email,
-      familyName: result.employee.familyName,
-      givenName: result.employee.givenName,
-      familyNameKana: result.employee.familyNameKana,
-      givenNameKana: result.employee.givenNameKana,
-      birthDate: result.employee.birthDate,
-      gender: result.employee.gender,
-      status: result.employee.status,
-    },
+  return jsonResponse(c, {
+    user: presentAuthUser(user),
+    employee: presentEmployee(result.employee),
   });
 });
 
@@ -50,12 +37,11 @@ employeeRoutes.get("/skill-sheet", async (c) => {
   const result = await getCurrentEmployeeSkillSheet(user.id);
 
   if (!result.ok) {
-    return c.json({ error: "Employee not found." }, 404);
+    return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
   }
 
-  return c.json({
-    status: "ok",
-    skillSheet: result.skillSheet,
+  return jsonResponse(c, {
+    skillSheet: presentSkillSheet(result.skillSheet),
   });
 });
 
@@ -75,23 +61,25 @@ employeeRoutes.put(
     if (!result.ok) {
       switch (result.error) {
         case "EMPLOYEE_NOT_FOUND":
-          return c.json({ error: "Employee not found" }, 404);
+          return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
+
         case "SKILL_OPTION_NOT_FOUND":
-          return c.json(
-            {
-              error: "Skill option not found",
-              skillOptionId: result.skillOptionId,
-            },
-            400,
-          );
+          return errorResponse(c, 400, "SKILL_OPTION_NOT_FOUND", "Skill option not found", {
+            skillOptionId: result.skillOptionId,
+          });
+
         case "SKILL_SHEET_NOT_FOUND_AFTER_SAVE":
-          return c.json({ error: "Skill sheet not found after save" }, 500);
+          return errorResponse(
+            c,
+            500,
+            "SKILL_SHEET_NOT_FOUND_AFTER_SAVE",
+            "Skill sheet not found after save",
+          );
       }
     }
 
-    return c.json({
-      status: "ok",
-      skillSheet: result.skillSheet,
+    return jsonResponse(c, {
+      skillSheet: presentSkillSheet(result.skillSheet),
     });
   },
 );

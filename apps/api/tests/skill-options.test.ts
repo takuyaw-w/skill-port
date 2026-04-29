@@ -78,7 +78,10 @@ describe("skill options API", () => {
     const body = await res.json();
 
     expect(body).toEqual({
-      error: "Unauthorized",
+      error: {
+        code: "UNAUTHORIZED",
+        message: "Unauthorized",
+      },
     });
   });
 
@@ -98,7 +101,6 @@ describe("skill options API", () => {
 
     const body = await res.json();
 
-    expect(body.status).toBe("ok");
     expect(body.skillOptions).toHaveLength(3);
     expect(body.skillOptions.map((option: { name: string }) => option.name)).toEqual([
       "Vue.js",
@@ -123,7 +125,6 @@ describe("skill options API", () => {
 
     const body = await res.json();
 
-    expect(body.status).toBe("ok");
     expect(body.skillOptions).toHaveLength(3);
   });
 

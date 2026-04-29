@@ -109,7 +109,6 @@ describe("admin employee skill sheet API", () => {
 
     const body = await res.json();
 
-    expect(body.status).toBe("ok");
     expect(body.employee).toMatchObject({
       id: employee.id,
       employeeCode: employee.employeeCode,
@@ -121,13 +120,8 @@ describe("admin employee skill sheet API", () => {
   });
 
   it("admin can fetch employee skill sheet", async () => {
-    const {
-      adminCookie,
-      employee,
-      employeeEmail,
-      employeePassword,
-      token,
-    } = await createAdminAndEmployee();
+    const { adminCookie, employee, employeeEmail, employeePassword, token } =
+      await createAdminAndEmployee();
 
     const employeeCookie = await acceptInvitationAndLoginEmployee({
       token,
@@ -202,7 +196,6 @@ describe("admin employee skill sheet API", () => {
 
     const body = await res.json();
 
-    expect(body.status).toBe("ok");
     expect(body.employee).toMatchObject({
       id: employee.id,
       employeeCode: employee.employeeCode,
@@ -248,17 +241,15 @@ describe("admin employee skill sheet API", () => {
     const body = await res.json();
 
     expect(body).toEqual({
-      error: "Employee not found",
+      error: {
+        code: "EMPLOYEE_NOT_FOUND",
+        message: "Employee not found",
+      },
     });
   });
 
   it("rejects employee access", async () => {
-    const {
-      employeeEmail,
-      employeePassword,
-      token,
-      employee,
-    } = await createAdminAndEmployee();
+    const { employeeEmail, employeePassword, token, employee } = await createAdminAndEmployee();
 
     const employeeCookie = await acceptInvitationAndLoginEmployee({
       token,
@@ -300,6 +291,9 @@ describe("admin employee skill sheet API", () => {
 
     const body = await res.json();
 
-    expect(body.error).toBe("Invalid request body");
+    expect(body.error).toMatchObject({
+      code: "VALIDATION_ERROR",
+      message: "Invalid request body",
+    });
   });
 });

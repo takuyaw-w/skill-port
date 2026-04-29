@@ -42,12 +42,12 @@ export async function listEmployees(client: DbClient = db) {
     })
     .from(employees)
     .leftJoin(skillSheets, eq(skillSheets.employeeId, employees.id))
-    .orderBy(asc(employees.employeeCode))
+    .orderBy(asc(employees.employeeCode));
 
   return rows.map(({ skillSheetId, ...employee }) => ({
     ...employee,
     hasSkillSheet: skillSheetId !== null,
-  }))
+  }));
 }
 
 export async function createPendingEmployee(

@@ -102,7 +102,6 @@ describe("employee skill sheet API", () => {
     const body = await res.json();
 
     expect(body).toEqual({
-      status: "ok",
       skillSheet: null,
     });
   });
@@ -194,7 +193,6 @@ describe("employee skill sheet API", () => {
 
     const saveBody = await saveRes.json();
 
-    expect(saveBody.status).toBe("ok");
     expect(saveBody.skillSheet).toMatchObject({
       publicInitials: "T.E.",
       nearestStation: "大宮",
@@ -240,7 +238,6 @@ describe("employee skill sheet API", () => {
 
     const getBody = await getRes.json();
 
-    expect(getBody.status).toBe("ok");
     expect(getBody.skillSheet).toMatchObject({
       id: saveBody.skillSheet.id,
       publicInitials: "T.E.",
@@ -392,8 +389,11 @@ describe("employee skill sheet API", () => {
 
     const body = await res.json();
 
-    expect(body.error).toBe("Invalid request body");
-    expect(body.issues.length).toBeGreaterThan(0);
+    expect(body.error).toMatchObject({
+      code: "VALIDATION_ERROR",
+      message: "Invalid request body",
+    });
+    expect(body.error.issues.length).toBeGreaterThan(0);
   });
 
   it("rejects unauthenticated request", async () => {
@@ -518,8 +518,11 @@ describe("employee skill sheet API", () => {
     const body = await res.json();
 
     expect(body).toMatchObject({
-      error: "Skill option not found",
-      skillOptionId: unknownSkillOptionId,
+      error: {
+        code: "SKILL_OPTION_NOT_FOUND",
+        message: "Skill option not found",
+        skillOptionId: unknownSkillOptionId,
+      },
     });
   });
 });
