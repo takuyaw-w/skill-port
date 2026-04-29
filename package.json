@@ -14,11 +14,15 @@
     "api:db:migrate": "pnpm --filter @skill-port/api db:migrate",
     "api:db:studio": "pnpm --filter @skill-port/api db:studio",
     "api:db:seed": "pnpm --filter @skill-port/api db:seed",
+
+    "admin-web:dev": "pnpm --filter @skill-port/admin-web dev",
+    "employee-web:dev": "pnpm --filter @skill-port/employee-web dev",
+
     "auth:secret": "pnpm dlx @better-auth/cli@latest secret",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "lint": "oxlint apps/api packages && pnpm --filter @skill-port/web lint",
-    "lint:fix": "oxlint apps/api packages --fix && pnpm --filter @skill-port/web lint:fix"
+    "lint": "oxlint apps packages",
+    "lint:fix": "oxlint apps packages --fix"
   },
   "devDependencies": {
     "oxfmt": "catalog:",
