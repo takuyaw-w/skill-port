@@ -7,10 +7,7 @@ import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
 import { db } from "../src/db/client.js";
 import { skillOptions } from "../src/db/schema.js";
-import { EmployeeGender } from "../src/const/employee-gender.js";
-import { ProjectPhase } from "../src/const/project-phase.js";
-import { ProjectRole } from "../src/const/project-role.js";
-import { SkillCategory } from "../src/const/skill-category.js";
+import { EmployeeGender, ProjectPhase, ProjectRole, SkillCategory } from "@skill-port/shared";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);

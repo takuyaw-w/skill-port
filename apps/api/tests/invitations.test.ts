@@ -4,8 +4,7 @@ import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
-import { EmployeeGender } from "../src/const/employee-gender.js";
-import { EmployeeStatus } from "../src/const/employee-status.js";
+import { EmployeeGender, EmployeeStatus } from "@skill-port/shared";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);

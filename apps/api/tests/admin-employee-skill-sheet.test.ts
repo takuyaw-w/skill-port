@@ -5,10 +5,7 @@ import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
-import { EmployeeGender } from "../src/const/employee-gender.js";
-import { ProjectPhase } from "../src/const/project-phase.js";
-import { ProjectRole } from "../src/const/project-role.js";
-import { SkillCategory } from "../src/const/skill-category.js";
+import { EmployeeGender, ProjectPhase, ProjectRole, SkillCategory } from "@skill-port/shared";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);

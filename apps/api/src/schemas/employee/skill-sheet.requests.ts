@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-import { projectPhaseValues } from "../../const/project-phase.js";
-import { projectRoleValues } from "../../const/project-role.js";
-import { skillCategoryValues } from "../../const/skill-category.js";
+import { projectPhaseValues, projectRoleValues, skillCategoryValues } from "@skill-port/shared";
 
 const optionalTextSchema = z.string().trim().max(1000).optional();
 const optionalShortTextSchema = z.string().trim().max(255).optional();

@@ -1,6 +1,6 @@
 import { db, pool } from "../src/db/client.js";
 import { skillOptionAliases, skillOptions } from "../src/db/schema.js";
-import { SkillCategory } from "../src/const/skill-category.js";
+import { SkillCategory } from "@skill-port/shared";
 
 type SkillOptionSeed = {
   category: string;

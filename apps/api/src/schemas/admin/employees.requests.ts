@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { EmployeeGender } from "../../const/employee-gender.js";
+import { EmployeeGender } from "@skill-port/shared";
 
 export const employeeGenderSchema = z.union([
   z.literal(EmployeeGender.Unanswered),

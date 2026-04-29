@@ -3,9 +3,8 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
 import type { DbClient } from "../db/client.js";
 import { employees, skillSheets } from "../db/schema.js";
-import type { EmployeeGenderValue } from "../const/employee-gender.js";
-import { EmployeeGender } from "../const/employee-gender.js";
-import { EmployeeStatus } from "../const/employee-status.js";
+import type { EmployeeGenderValue } from "@skill-port/shared";
+import { EmployeeGender, EmployeeStatus } from "@skill-port/shared";
 
 type CreatePendingEmployeeInput = {
   email: string;

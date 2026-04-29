@@ -6,7 +6,7 @@ import { skillOptions } from "../src/db/schema.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
-import { SkillCategory } from "../src/const/skill-category.js";
+import { SkillCategory } from "@skill-port/shared";
 
 async function createLoggedInUser(role: "admin" | "employee") {
   const email = uniqueEmail(role);
