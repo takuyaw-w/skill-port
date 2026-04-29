@@ -1,22 +1,3 @@
-export const EmployeeGender = {
-  Unanswered: 0,
-  Male: 1,
-  Female: 2,
-  Other: 3,
-} as const;
+export { EmployeeGender, employeeGenderLabels, employeeGenderValues } from "@skill-port/shared";
 
-export const employeeGenderValues = [
-  EmployeeGender.Unanswered,
-  EmployeeGender.Male,
-  EmployeeGender.Female,
-  EmployeeGender.Other,
-] as const;
-
-export type EmployeeGender = (typeof employeeGenderValues)[number];
-
-export const employeeGenderLabels: Record<EmployeeGender, string> = {
-  [EmployeeGender.Unanswered]: "未回答",
-  [EmployeeGender.Male]: "男性",
-  [EmployeeGender.Female]: "女性",
-  [EmployeeGender.Other]: "その他",
-};
+export type { EmployeeGenderValue } from "@skill-port/shared";

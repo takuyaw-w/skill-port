@@ -44,6 +44,9 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.7.6
         version: 0.7.6(hono@4.12.15)(zod@4.3.6)
+      '@skill-port/shared':
+        specifier: 'workspace:'
+        version: link:../../packages/shared
       '@t3-oss/env-core':
         specifier: 'catalog:'
         version: 0.13.11(typescript@6.0.3)(zod@4.3.6)
@@ -81,6 +84,12 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.1.5(@types/node@20.19.39)(vite@8.0.10(@types/node@20.19.39)(esbuild@0.27.7)(tsx@4.21.0))
+
+  packages/shared:
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
 packages:
 

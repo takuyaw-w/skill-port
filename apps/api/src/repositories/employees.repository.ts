@@ -3,7 +3,8 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
 import type { DbClient } from "../db/client.js";
 import { employees, skillSheets } from "../db/schema.js";
-import { EmployeeGender as EmployeeGenderValues } from "../const/employee-gender.js";
+import type { EmployeeGenderValue } from "../const/employee-gender.js";
+import { EmployeeGender } from "../const/employee-gender.js";
 import { EmployeeStatus } from "../const/employee-status.js";
 
 type CreatePendingEmployeeInput = {
@@ -14,7 +15,7 @@ type CreatePendingEmployeeInput = {
   familyNameKana?: string;
   givenNameKana?: string;
   birthDate?: string;
-  gender?: EmployeeGenderValues;
+  gender?: EmployeeGenderValue;
 };
 
 type LinkEmployeeToUserInput = {
@@ -60,7 +61,7 @@ export async function createPendingEmployee(
     employeeCode: input.employeeCode,
     familyName: input.familyName,
     givenName: input.givenName,
-    gender: input.gender ?? EmployeeGenderValues.Unanswered,
+    gender: input.gender ?? EmployeeGender.Unanswered,
     status: EmployeeStatus.PendingInvitation,
   };
 
@@ -86,7 +87,7 @@ export async function linkEmployeeToUser(input: LinkEmployeeToUserInput, client:
     .update(employees)
     .set({
       userId: input.userId,
-      status: EmployeeStatus.Active
+      status: EmployeeStatus.Active,
     })
     .where(eq(employees.id, input.employeeId))
     .returning();

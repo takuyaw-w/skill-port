@@ -1,8 +1,5 @@
 import type { AuthUserResponse } from "../presenters/auth.presenter.js";
-import type {
-  AdminEmployeeResponse,
-  EmployeeResponse,
-} from "../presenters/employees.presenter.js";
+import type { AdminEmployeeResponse, EmployeeResponse } from "../presenters/employees.presenter.js";
 import type { SkillOptionResponse } from "../presenters/skill-options.presenter.js";
 import type { NullableSkillSheetResponse } from "../presenters/skill-sheets.presenter.js";
 

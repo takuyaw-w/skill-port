@@ -1,19 +1,3 @@
-export const ProjectRole = {
-  Leader: "leader",
-  Member: "member",
-  Other: "other",
-} as const;
+export { ProjectRole, projectRoleLabels, projectRoleValues } from "@skill-port/shared";
 
-export const projectRoleValues = [
-  ProjectRole.Leader,
-  ProjectRole.Member,
-  ProjectRole.Other,
-] as const;
-
-export type ProjectRole = (typeof projectRoleValues)[number];
-
-export const projectRoleLabels: Record<ProjectRole, string> = {
-  [ProjectRole.Leader]: "リーダー",
-  [ProjectRole.Member]: "メンバー",
-  [ProjectRole.Other]: "その他",
-};
+export type { ProjectRoleValue } from "@skill-port/shared";
