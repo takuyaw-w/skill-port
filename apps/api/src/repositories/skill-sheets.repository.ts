@@ -47,18 +47,14 @@ export async function findSkillSheetByEmployeeId(employeeId: string, client: DbC
     return null;
   }
 
-  const [certifications, skills, projects] = await Promise.all([
-    findSkillSheetCertificationsBySkillSheetId(skillSheet.id, client),
-    findSkillSheetSkillsBySkillSheetId(skillSheet.id, client),
-    findSkillSheetProjectsBySkillSheetId(skillSheet.id, client),
-  ]);
+  const certifications = await findSkillSheetCertificationsBySkillSheetId(skillSheet.id, client);
+  const skills = await findSkillSheetSkillsBySkillSheetId(skillSheet.id, client);
+  const projects = await findSkillSheetProjectsBySkillSheetId(skillSheet.id, client);
 
   const projectIds = projects.map((project) => project.id);
 
-  const [technologies, phases] = await Promise.all([
-    findSkillSheetProjectTechnologiesByProjectIds(projectIds, client),
-    findSkillSheetProjectPhasesByProjectIds(projectIds, client),
-  ]);
+  const technologies = await findSkillSheetProjectTechnologiesByProjectIds(projectIds, client);
+  const phases = await findSkillSheetProjectPhasesByProjectIds(projectIds, client);
 
   return {
     ...skillSheet,
