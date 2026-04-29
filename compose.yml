@@ -15,6 +15,7 @@ services:
       - employee-web-node-modules:/workspace/apps/employee-web/node_modules
       - shared-node-modules:/workspace/packages/shared/node_modules
       - contracts-node-modules:/workspace/packages/contracts/node_modules
+      - api-client-node-modules:/workspace/packages/api-client/node_modules
       - pnpm-store:/pnpm/store
     env_file:
       - .env
@@ -61,4 +62,5 @@ volumes:
   employee-web-node-modules:
   shared-node-modules:
   contracts-node-modules:
+  api-client-node-modules:
   pnpm-store:

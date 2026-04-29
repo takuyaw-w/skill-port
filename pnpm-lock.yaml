@@ -127,6 +127,9 @@ importers:
 
   apps/employee-web:
     dependencies:
+      '@skill-port/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@skill-port/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -149,6 +152,19 @@ importers:
       vue-tsc:
         specifier: 'catalog:'
         version: 3.2.7(typescript@6.0.3)
+
+  packages/api-client:
+    dependencies:
+      '@skill-port/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@skill-port/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
 
   packages/contracts:
     dependencies:

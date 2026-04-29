@@ -8,6 +8,9 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
+
+    "dev:all": "pnpm --parallel --filter @skill-port/api --filter @skill-port/admin-web --filter @skill-port/employee-web dev",
+
     "api:dev": "pnpm --filter @skill-port/api dev",
     "api:test": "pnpm --filter @skill-port/api test",
     "api:db:generate": "pnpm --filter @skill-port/api db:generate",
