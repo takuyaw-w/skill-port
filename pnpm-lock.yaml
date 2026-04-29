@@ -50,6 +50,9 @@ importers:
 
   apps/admin-web:
     dependencies:
+      '@skill-port/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@skill-port/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

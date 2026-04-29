@@ -1,7 +1,7 @@
 // apps/api/src/app.ts
 
 import { Hono } from "hono";
-
+import { cors } from "hono/cors";
 import { auth } from "./auth/auth.js";
 import { db } from "./db/client.js";
 import { healthChecks } from "./db/schema.js";
@@ -11,6 +11,16 @@ import { employeeRoutes } from "./routes/employee.routes.js";
 import { skillOptionsRoutes } from "./routes/skill-options.routes.js";
 
 export const app = new Hono();
+
+app.use(
+  "*",
+  cors({
+    origin: ["http://localhost:3001", "http://localhost:3002"],
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"]
+  })
+)
 
 app.get("/", (c) => {
   return c.json({

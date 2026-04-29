@@ -11,6 +11,7 @@
     "lint": "oxlint ."
   },
   "dependencies": {
+    "@skill-port/api-client": "workspace:*",
     "@skill-port/contracts": "workspace:*",
     "@skill-port/shared": "workspace:*",
     "nuxt": "catalog:",
