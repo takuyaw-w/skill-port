@@ -1,3 +1,5 @@
+import { db } from "../src/db/client.js";
+import { skillSheets } from "../src/db/schema.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
@@ -109,6 +111,118 @@ describe("admin employees API", () => {
     const cookie = await loginAndGetCookie(employeeEmail, employeePassword);
 
     const res = await app.request("/api/admin/me", {
+      method: "GET",
+      headers: {
+        cookie,
+      },
+    });
+
+    expect(res.status).toBe(403);
+  });
+
+  it("admin can list employees with hasSkillSheet", async () => {
+    const adminEmail = uniqueEmail("admin");
+    const adminPassword = "password123";
+
+    await createTestUser({
+      email: adminEmail,
+      password: adminPassword,
+      name: "Admin",
+      role: "admin",
+    });
+
+    const cookie = await loginAndGetCookie(adminEmail, adminPassword);
+
+    const firstEmployeeRes = await app.request("/api/admin/employees", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie,
+      },
+      body: JSON.stringify({
+        email: uniqueEmail("employee-a"),
+        employeeCode: "EMP001",
+        familyName: "Skill",
+        givenName: "Exists",
+        familyNameKana: "スキル",
+        givenNameKana: "アリ",
+        gender: 1,
+      }),
+    });
+
+    expect(firstEmployeeRes.status).toBe(201);
+
+    const firstEmployeeBody = await firstEmployeeRes.json();
+
+    const secondEmployeeRes = await app.request("/api/admin/employees", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        cookie,
+      },
+      body: JSON.stringify({
+        email: uniqueEmail("employee-b"),
+        employeeCode: "EMP002",
+        familyName: "Skill",
+        givenName: "None",
+        familyNameKana: "スキル",
+        givenNameKana: "ナシ",
+        gender: 2,
+      }),
+    });
+
+    expect(secondEmployeeRes.status).toBe(201);
+
+    await db.insert(skillSheets).values({
+      employeeId: firstEmployeeBody.employee.id,
+      publicInitials: "S.E.",
+      nearestStation: "大宮",
+      experienceLabel: "約5年",
+      selfPr: "test",
+    });
+
+    const listRes = await app.request("/api/admin/employees", {
+      method: "GET",
+      headers: {
+        cookie,
+      },
+    });
+
+    expect(listRes.status).toBe(200);
+
+    const body = await listRes.json();
+
+    expect(body.employees).toHaveLength(2);
+
+    expect(body.employees[0]).toMatchObject({
+      employeeCode: "EMP001",
+      familyName: "Skill",
+      givenName: "Exists",
+      hasSkillSheet: true,
+    });
+
+    expect(body.employees[1]).toMatchObject({
+      employeeCode: "EMP002",
+      familyName: "Skill",
+      givenName: "None",
+      hasSkillSheet: false,
+    });
+  });
+
+  it("employee cannot list employees", async () => {
+    const employeeEmail = uniqueEmail("employee");
+    const employeePassword = "password123";
+
+    await createTestUser({
+      email: employeeEmail,
+      password: employeePassword,
+      name: "Employee",
+      role: "employee",
+    });
+
+    const cookie = await loginAndGetCookie(employeeEmail, employeePassword);
+
+    const res = await app.request("/api/admin/employees", {
       method: "GET",
       headers: {
         cookie,

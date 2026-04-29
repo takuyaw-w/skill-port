@@ -1,8 +1,8 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import { db } from "../db/client.js";
 import type { DbClient } from "../db/client.js";
-import { employees } from "../db/schema.js";
+import { employees, skillSheets } from "../db/schema.js";
 import type { EmployeeGender } from "../const/employee-gender.js";
 import { EmployeeGender as EmployeeGenderValue } from "../const/employee-gender.js";
 
@@ -23,7 +23,31 @@ type LinkEmployeeToUserInput = {
 };
 
 export async function listEmployees(client: DbClient = db) {
-  return client.select().from(employees);
+  const rows = await client
+    .select({
+      id: employees.id,
+      userId: employees.userId,
+      email: employees.email,
+      employeeCode: employees.employeeCode,
+      familyName: employees.familyName,
+      givenName: employees.givenName,
+      familyNameKana: employees.familyNameKana,
+      givenNameKana: employees.givenNameKana,
+      birthDate: employees.birthDate,
+      gender: employees.gender,
+      status: employees.status,
+      createdAt: employees.createdAt,
+      updatedAt: employees.updatedAt,
+      skillSheetId: skillSheets.id,
+    })
+    .from(employees)
+    .leftJoin(skillSheets, eq(skillSheets.employeeId, employees.id))
+    .orderBy(asc(employees.employeeCode))
+
+  return rows.map(({ skillSheetId, ...employee }) => ({
+    ...employee,
+    hasSkillSheet: skillSheetId !== null,
+  }))
 }
 
 export async function createPendingEmployee(
