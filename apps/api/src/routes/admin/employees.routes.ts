@@ -16,15 +16,22 @@ import {
 } from "../../presenters/employees.presenter.js";
 import { presentSkillSheet } from "../../presenters/skill-sheets.presenter.js";
 import { createdResponse, errorResponse, jsonResponse } from "../../shared/http/json-response.js";
+import type {
+  AdminEmployeeSkillSheetResponse,
+  CreateAdminEmployeeResponse,
+  ListAdminEmployeesResponse,
+} from "../../types/api-responses.js";
 
 export const adminEmployeesRoutes = new Hono();
 
 adminEmployeesRoutes.get("/", async (c) => {
   const employees = await listEmployees();
 
-  return jsonResponse(c, {
+  const response: ListAdminEmployeesResponse = {
     employees: presentEmployees(employees),
-  });
+  };
+
+  return jsonResponse(c, response);
 });
 
 adminEmployeesRoutes.post(
@@ -39,10 +46,12 @@ adminEmployeesRoutes.post(
 
     const result = await createEmployeeWithInvitation(body);
 
-    return createdResponse(c, {
+    const response: CreateAdminEmployeeResponse = {
       employee: presentAdminEmployee(result.employee),
       invitationUrl: result.invitationUrl,
-    });
+    };
+
+    return createdResponse(c, response);
   },
 );
 
@@ -64,9 +73,11 @@ adminEmployeesRoutes.get(
       }
     }
 
-    return jsonResponse(c, {
+    const response: AdminEmployeeSkillSheetResponse = {
       employee: presentEmployee(result.employee),
       skillSheet: presentSkillSheet(result.skillSheet),
-    });
+    };
+
+    return jsonResponse(c, response);
   },
 );

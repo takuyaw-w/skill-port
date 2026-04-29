@@ -1,5 +1,7 @@
 import type { Context } from "hono";
 
+import type { ValidationErrorResponse } from "../../types/api-errors.js";
+
 type ValidationIssue = {
   path: readonly PropertyKey[];
   code: string;
@@ -11,18 +13,17 @@ type ValidationErrorLike = {
 };
 
 export function zodErrorResponse(c: Context, error: ValidationErrorLike) {
-  return c.json(
-    {
-      error: {
-        code: "VALIDATION_ERROR",
-        message: "Invalid request body",
-        issues: error.issues.map((issue) => ({
-          path: issue.path.map(String).join("."),
-          code: issue.code,
-          message: issue.message,
-        })),
-      },
+  const body: ValidationErrorResponse = {
+    error: {
+      code: "VALIDATION_ERROR",
+      message: "Invalid request body",
+      issues: error.issues.map((issue) => ({
+        path: issue.path.map(String).join("."),
+        code: issue.code,
+        message: issue.message,
+      })),
     },
-    400,
-  );
+  };
+
+  return c.json(body, 400);
 }

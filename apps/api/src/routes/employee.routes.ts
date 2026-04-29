@@ -11,6 +11,11 @@ import { presentAuthUser } from "../presenters/auth.presenter.js";
 import { presentEmployee } from "../presenters/employees.presenter.js";
 import { presentSkillSheet } from "../presenters/skill-sheets.presenter.js";
 import { errorResponse, jsonResponse } from "../shared/http/json-response.js";
+import type {
+  CurrentEmployeeResponse,
+  EmployeeSkillSheetResponse,
+  SaveEmployeeSkillSheetResponse,
+} from "../types/api-responses.js";
 
 export const employeeRoutes = new Hono<{ Variables: AppVariables }>();
 
@@ -25,10 +30,12 @@ employeeRoutes.get("/me", async (c) => {
     return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
   }
 
-  return jsonResponse(c, {
+  const response: CurrentEmployeeResponse = {
     user: presentAuthUser(user),
     employee: presentEmployee(result.employee),
-  });
+  };
+
+  return jsonResponse(c, response);
 });
 
 employeeRoutes.get("/skill-sheet", async (c) => {
@@ -40,9 +47,11 @@ employeeRoutes.get("/skill-sheet", async (c) => {
     return errorResponse(c, 404, "EMPLOYEE_NOT_FOUND", "Employee not found");
   }
 
-  return jsonResponse(c, {
+  const response: EmployeeSkillSheetResponse = {
     skillSheet: presentSkillSheet(result.skillSheet),
-  });
+  };
+
+  return jsonResponse(c, response);
 });
 
 employeeRoutes.put(
@@ -78,8 +87,21 @@ employeeRoutes.put(
       }
     }
 
-    return jsonResponse(c, {
-      skillSheet: presentSkillSheet(result.skillSheet),
-    });
+    const skillSheet = presentSkillSheet(result.skillSheet);
+
+    if (!skillSheet) {
+      return errorResponse(
+        c,
+        500,
+        "SKILL_SHEET_NOT_FOUND_AFTER_SAVE",
+        "Skill sheet not found after save",
+      );
+    }
+
+    const response: SaveEmployeeSkillSheetResponse = {
+      skillSheet,
+    };
+
+    return jsonResponse(c, response);
   },
 );

@@ -8,7 +8,17 @@ type SkillOptionLike = {
   isActive: boolean;
 };
 
-export function presentSkillOption(skillOption: SkillOptionLike) {
+export type SkillOptionResponse = {
+  id: string;
+  category: string;
+  name: string;
+  normalizedName: string;
+  description: string | null;
+  sortOrder: number;
+  isActive: boolean;
+};
+
+export function presentSkillOption(skillOption: SkillOptionLike): SkillOptionResponse {
   return {
     id: skillOption.id,
     category: skillOption.category,
@@ -20,6 +30,6 @@ export function presentSkillOption(skillOption: SkillOptionLike) {
   };
 }
 
-export function presentSkillOptions(skillOptions: SkillOptionLike[]) {
+export function presentSkillOptions(skillOptions: SkillOptionLike[]): SkillOptionResponse[] {
   return skillOptions.map(presentSkillOption);
 }

@@ -8,6 +8,7 @@ import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
 import type { AppVariables } from "../types/hono.js";
 import { presentSkillOptions } from "../presenters/skill-options.presenter.js";
 import { jsonResponse } from "../shared/http/json-response.js";
+import type { ListSkillOptionsResponse } from "../types/api-responses.js";
 
 export const skillOptionsRoutes = new Hono<{ Variables: AppVariables }>();
 
@@ -25,8 +26,10 @@ skillOptionsRoutes.get(
 
     const skillOptions = await listSkillOptions(query);
 
-    return jsonResponse(c, {
+    const response: ListSkillOptionsResponse = {
       skillOptions: presentSkillOptions(skillOptions),
-    });
+    };
+
+    return jsonResponse(c, response);
   },
 );

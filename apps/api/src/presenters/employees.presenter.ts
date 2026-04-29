@@ -13,7 +13,24 @@ type EmployeeLike = {
   hasSkillSheet?: boolean;
 };
 
-export function presentEmployee(employee: EmployeeLike) {
+export type EmployeeResponse = {
+  id: string;
+  employeeCode: string;
+  email: string;
+  familyName: string;
+  givenName: string;
+  familyNameKana: string | null;
+  givenNameKana: string | null;
+  birthDate: string | null;
+  gender: number;
+  status: string;
+};
+
+export type AdminEmployeeResponse = EmployeeResponse & {
+  hasSkillSheet: boolean;
+};
+
+export function presentEmployee(employee: EmployeeLike): EmployeeResponse {
   return {
     id: employee.id,
     employeeCode: employee.employeeCode,
@@ -28,13 +45,13 @@ export function presentEmployee(employee: EmployeeLike) {
   };
 }
 
-export function presentAdminEmployee(employee: EmployeeLike) {
+export function presentAdminEmployee(employee: EmployeeLike): AdminEmployeeResponse {
   return {
     ...presentEmployee(employee),
     hasSkillSheet: employee.hasSkillSheet ?? false,
   };
 }
 
-export function presentEmployees(employees: EmployeeLike[]) {
+export function presentEmployees(employees: EmployeeLike[]): AdminEmployeeResponse[] {
   return employees.map(presentAdminEmployee);
 }

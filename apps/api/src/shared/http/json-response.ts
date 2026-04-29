@@ -1,5 +1,7 @@
 import type { Context } from "hono";
 
+import type { ApiErrorCode, ApiErrorResponse } from "../../types/api-errors.js";
+
 type ErrorDetails = Record<string, unknown>;
 
 export function jsonResponse<TBody>(c: Context, body: TBody) {
@@ -10,21 +12,20 @@ export function createdResponse<TBody>(c: Context, body: TBody) {
   return c.json(body, 201);
 }
 
-export function errorResponse(
+export function errorResponse<TDetails extends ErrorDetails>(
   c: Context,
   statusCode: 400 | 401 | 403 | 404 | 409 | 500,
-  code: string,
+  code: ApiErrorCode,
   message: string,
-  details?: ErrorDetails,
+  details?: TDetails,
 ) {
-  return c.json(
-    {
-      error: {
-        code,
-        message,
-        ...details,
-      },
+  const body: ApiErrorResponse<TDetails> = {
+    error: {
+      code,
+      message,
+      ...(details ?? ({} as TDetails)),
     },
-    statusCode,
-  );
+  };
+
+  return c.json(body, statusCode);
 }
