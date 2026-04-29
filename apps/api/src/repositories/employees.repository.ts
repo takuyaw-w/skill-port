@@ -92,3 +92,26 @@ export async function findEmployeeByUserId(userId: string, client: DbClient = db
     .limit(1);
   return employee ?? null;
 }
+
+export async function findEmployeeById(employeeId: string, client: DbClient = db) {
+  const [employee] = await client
+    .select({
+      id: employees.id,
+      userId: employees.userId,
+      email: employees.email,
+      employeeCode: employees.employeeCode,
+      familyName: employees.familyName,
+      givenName: employees.givenName,
+      familyNameKana: employees.familyNameKana,
+      givenNameKana: employees.givenNameKana,
+      birthDate: employees.birthDate,
+      gender: employees.gender,
+      status: employees.status,
+      createdAt: employees.createdAt,
+      updatedAt: employees.updatedAt,
+    })
+    .from(employees)
+    .where(eq(employees.id, employeeId))
+    .limit(1);
+  return employee ?? null;
+}

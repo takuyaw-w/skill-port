@@ -14,25 +14,25 @@ type SavedSkillSheet = NonNullable<Awaited<ReturnType<typeof findSkillSheetByEmp
 
 type SaveCurrentEmployeeSkillSheetResult =
   | {
-    ok: true;
-    skillSheet: SavedSkillSheet;
-  }
+      ok: true;
+      skillSheet: SavedSkillSheet;
+    }
   | {
-    ok: false;
-    error: "EMPLOYEE_NOT_FOUND" | "SKILL_SHEET_NOT_FOUND_AFTER_SAVE" | "SKILL_OPTION_NOT_FOUND";
-    skillOptionId?: string;
-  };
+      ok: false;
+      error: "EMPLOYEE_NOT_FOUND" | "SKILL_SHEET_NOT_FOUND_AFTER_SAVE" | "SKILL_OPTION_NOT_FOUND";
+      skillOptionId?: string;
+    };
 
 type SaveSkillSheetTransactionResult =
   | {
-    ok: true;
-    skillSheet: SavedSkillSheet;
-  }
+      ok: true;
+      skillSheet: SavedSkillSheet;
+    }
   | {
-    ok: false;
-    error: "SKILL_SHEET_NOT_FOUND_AFTER_SAVE" | "SKILL_OPTION_NOT_FOUND";
-    skillOptionId?: string;
-  };
+      ok: false;
+      error: "SKILL_SHEET_NOT_FOUND_AFTER_SAVE" | "SKILL_OPTION_NOT_FOUND";
+      skillOptionId?: string;
+    };
 
 export async function saveCurrentEmployeeSkillSheet(
   userId: string,

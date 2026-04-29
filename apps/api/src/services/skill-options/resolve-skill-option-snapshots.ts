@@ -19,14 +19,14 @@ type ResolvedSkillOptionSnapshot = {
 
 type ResolveSkillOptionSnapshotsResult =
   | {
-    ok: true;
-    values: ResolvedSkillOptionSnapshot[];
-  }
+      ok: true;
+      values: ResolvedSkillOptionSnapshot[];
+    }
   | {
-    ok: false;
-    error: "SKILL_OPTION_NOT_FOUND";
-    skillOptionId: string;
-  };
+      ok: false;
+      error: "SKILL_OPTION_NOT_FOUND";
+      skillOptionId: string;
+    };
 
 export async function resolveSkillOptionSnapshots(
   inputs: SkillOptionLikeInput[],
@@ -34,9 +34,7 @@ export async function resolveSkillOptionSnapshots(
 ): Promise<ResolveSkillOptionSnapshotsResult> {
   const skillOptionIds = [
     ...new Set(
-      inputs
-        .map((input) => input.skillOptionId)
-        .filter((id): id is string => Boolean(id)),
+      inputs.map((input) => input.skillOptionId).filter((id): id is string => Boolean(id)),
     ),
   ];
 
