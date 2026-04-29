@@ -19,14 +19,14 @@ type ResolvedSkillOptionSnapshot = {
 
 type ResolveSkillOptionSnapshotsResult =
   | {
-      ok: true;
-      values: ResolvedSkillOptionSnapshot[];
-    }
+    ok: true;
+    values: ResolvedSkillOptionSnapshot[];
+  }
   | {
-      ok: false;
-      error: "SKILL_OPTION_NOT_FOUND";
-      skillOptionId: string;
-    };
+    ok: false;
+    error: "SKILL_OPTION_NOT_FOUND";
+    skillOptionId: string;
+  };
 
 export async function resolveSkillOptionSnapshots(
   inputs: SkillOptionLikeInput[],
@@ -34,12 +34,14 @@ export async function resolveSkillOptionSnapshots(
 ): Promise<ResolveSkillOptionSnapshotsResult> {
   const skillOptionIds = [
     ...new Set(
-      inputs.map((input) => input.skillOptionId).filter((id): id is string => Boolean(id)),
+      inputs
+        .map((input) => input.skillOptionId)
+        .filter((id): id is string => Boolean(id)),
     ),
   ];
 
-  const skillOptions = await findSkillOptionsByIds(skillOptionIds, client);
-  const skillOptionsById = new Map(skillOptions.map((option) => [option.id, option]));
+  const options = await findSkillOptionsByIds(skillOptionIds, client);
+  const optionsById = new Map(options.map((option) => [option.id, option]));
 
   const values: ResolvedSkillOptionSnapshot[] = [];
 
@@ -55,9 +57,9 @@ export async function resolveSkillOptionSnapshots(
       continue;
     }
 
-    const skillOption = skillOptionsById.get(input.skillOptionId);
+    const option = optionsById.get(input.skillOptionId);
 
-    if (!skillOption) {
+    if (!option) {
       return {
         ok: false,
         error: "SKILL_OPTION_NOT_FOUND",
@@ -66,10 +68,10 @@ export async function resolveSkillOptionSnapshots(
     }
 
     values.push({
-      skillOptionId: skillOption.id,
-      category: skillOption.category,
-      name: skillOption.name,
-      normalizedName: skillOption.normalizedName,
+      skillOptionId: option.id,
+      category: option.category,
+      name: option.name,
+      normalizedName: option.normalizedName,
       sortOrder: input.sortOrder,
     });
   }

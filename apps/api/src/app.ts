@@ -8,6 +8,7 @@ import { healthChecks } from "./db/schema.js";
 import { adminRoutes } from "./routes/admin.routes.js";
 import { invitationRoutes } from "./routes/invitations.routes.js";
 import { employeeRoutes } from "./routes/employee.routes.js";
+import { skillOptionsRoutes } from "./routes/skill-options.routes.js";
 
 export const app = new Hono();
 
@@ -40,3 +41,4 @@ app.get("/health/db", async (c) => {
 app.route("/api/admin", adminRoutes);
 app.route("/api/employee", employeeRoutes);
 app.route("/api/invitations", invitationRoutes);
+app.route("/api/skill-options", skillOptionsRoutes);
