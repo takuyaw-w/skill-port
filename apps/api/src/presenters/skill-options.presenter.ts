@@ -1,14 +1,6 @@
-type SkillOptionLike = {
-  id: string;
-  category: string;
-  name: string;
-  normalizedName: string;
-  description: string | null;
-  sortOrder: number;
-  isActive: boolean;
-};
+import type { SkillOptionResponse } from "@skill-port/contracts";
 
-export type SkillOptionResponse = {
+type SkillOptionLike = {
   id: string;
   category: string;
   name: string;
@@ -21,7 +13,7 @@ export type SkillOptionResponse = {
 export function presentSkillOption(skillOption: SkillOptionLike): SkillOptionResponse {
   return {
     id: skillOption.id,
-    category: skillOption.category,
+    category: skillOption.category as SkillOptionResponse["category"],
     name: skillOption.name,
     normalizedName: skillOption.normalizedName,
     description: skillOption.description,

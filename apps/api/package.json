@@ -20,7 +20,8 @@
   "dependencies": {
     "@hono/node-server": "^2.0.0",
     "@hono/zod-validator": "^0.7.6",
-    "@skill-port/shared": "workspace:",
+    "@skill-port/shared": "workspace:*",
+    "@skill-port/contracts": "workspace:*",
     "@t3-oss/env-core": "catalog:",
     "better-auth": "^1.6.9",
     "drizzle-orm": "^0.45.2",

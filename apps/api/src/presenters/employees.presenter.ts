@@ -1,3 +1,8 @@
+import type {
+  AdminEmployeeResponse,
+  EmployeeResponse,
+} from "@skill-port/contracts";
+
 type EmployeeLike = {
   id: string;
   userId?: string | null;
@@ -13,23 +18,6 @@ type EmployeeLike = {
   hasSkillSheet?: boolean;
 };
 
-export type EmployeeResponse = {
-  id: string;
-  employeeCode: string;
-  email: string;
-  familyName: string;
-  givenName: string;
-  familyNameKana: string | null;
-  givenNameKana: string | null;
-  birthDate: string | null;
-  gender: number;
-  status: string;
-};
-
-export type AdminEmployeeResponse = EmployeeResponse & {
-  hasSkillSheet: boolean;
-};
-
 export function presentEmployee(employee: EmployeeLike): EmployeeResponse {
   return {
     id: employee.id,
@@ -40,8 +28,8 @@ export function presentEmployee(employee: EmployeeLike): EmployeeResponse {
     familyNameKana: employee.familyNameKana,
     givenNameKana: employee.givenNameKana,
     birthDate: employee.birthDate,
-    gender: employee.gender,
-    status: employee.status,
+    gender: employee.gender as EmployeeResponse["gender"],
+    status: employee.status as EmployeeResponse["status"],
   };
 }
 

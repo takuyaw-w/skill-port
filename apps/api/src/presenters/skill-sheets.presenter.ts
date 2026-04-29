@@ -1,3 +1,12 @@
+import type {
+  NullableSkillSheetResponse,
+  SkillSheetCertificationResponse,
+  SkillSheetProjectPhaseResponse,
+  SkillSheetProjectResponse,
+  SkillSheetProjectTechnologyResponse,
+  SkillSheetSkillResponse,
+} from "@skill-port/contracts";
+
 type SkillSheetLike = {
   id: string;
   employeeId: string;
@@ -54,63 +63,6 @@ type SkillSheetProjectLike = {
   phases: SkillSheetProjectPhaseLike[];
 };
 
-export type SkillSheetCertificationResponse = {
-  id: string;
-  name: string;
-  sortOrder: number;
-};
-
-export type SkillSheetSkillResponse = {
-  id: string;
-  skillOptionId: string | null;
-  category: string;
-  name: string;
-  normalizedName: string | null;
-  sortOrder: number;
-};
-
-export type SkillSheetProjectTechnologyResponse = {
-  id: string;
-  skillOptionId: string | null;
-  category: string;
-  name: string;
-  normalizedName: string | null;
-  sortOrder: number;
-};
-
-export type SkillSheetProjectPhaseResponse = {
-  id: string;
-  phase: string;
-  sortOrder: number;
-};
-
-export type SkillSheetProjectResponse = {
-  id: string;
-  startYearMonth: string;
-  endYearMonth: string | null;
-  name: string;
-  summary: string | null;
-  responsibilities: string | null;
-  role: string | null;
-  teamSize: number | null;
-  sortOrder: number;
-  technologies: SkillSheetProjectTechnologyResponse[];
-  phases: SkillSheetProjectPhaseResponse[];
-};
-
-export type SkillSheetResponse = {
-  id: string;
-  publicInitials: string;
-  nearestStation: string | null;
-  experienceLabel: string | null;
-  selfPr: string | null;
-  certifications: SkillSheetCertificationResponse[];
-  skills: SkillSheetSkillResponse[];
-  projects: SkillSheetProjectResponse[];
-};
-
-export type NullableSkillSheetResponse = SkillSheetResponse | null;
-
 export function presentSkillSheet(skillSheet: SkillSheetLike | null): NullableSkillSheetResponse {
   if (!skillSheet) {
     return null;
@@ -122,42 +74,57 @@ export function presentSkillSheet(skillSheet: SkillSheetLike | null): NullableSk
     nearestStation: skillSheet.nearestStation,
     experienceLabel: skillSheet.experienceLabel,
     selfPr: skillSheet.selfPr,
-    certifications: skillSheet.certifications.map((certification) => ({
-      id: certification.id,
-      name: certification.name,
-      sortOrder: certification.sortOrder,
-    })),
-    skills: skillSheet.skills.map((skill) => ({
-      id: skill.id,
-      skillOptionId: skill.skillOptionId,
-      category: skill.category,
-      name: skill.name,
-      normalizedName: skill.normalizedName,
-      sortOrder: skill.sortOrder,
-    })),
-    projects: skillSheet.projects.map((project) => ({
-      id: project.id,
-      startYearMonth: project.startYearMonth,
-      endYearMonth: project.endYearMonth,
-      name: project.name,
-      summary: project.summary,
-      responsibilities: project.responsibilities,
-      role: project.role,
-      teamSize: project.teamSize,
-      sortOrder: project.sortOrder,
-      technologies: project.technologies.map((technology) => ({
-        id: technology.id,
-        skillOptionId: technology.skillOptionId,
-        category: technology.category,
-        name: technology.name,
-        normalizedName: technology.normalizedName,
-        sortOrder: technology.sortOrder,
-      })),
-      phases: project.phases.map((phase) => ({
-        id: phase.id,
-        phase: phase.phase,
-        sortOrder: phase.sortOrder,
-      })),
-    })),
+
+    certifications: skillSheet.certifications.map(
+      (certification): SkillSheetCertificationResponse => ({
+        id: certification.id,
+        name: certification.name,
+        sortOrder: certification.sortOrder,
+      }),
+    ),
+
+    skills: skillSheet.skills.map(
+      (skill): SkillSheetSkillResponse => ({
+        id: skill.id,
+        skillOptionId: skill.skillOptionId,
+        category: skill.category as SkillSheetSkillResponse["category"],
+        name: skill.name,
+        normalizedName: skill.normalizedName,
+        sortOrder: skill.sortOrder,
+      }),
+    ),
+
+    projects: skillSheet.projects.map(
+      (project): SkillSheetProjectResponse => ({
+        id: project.id,
+        startYearMonth: project.startYearMonth,
+        endYearMonth: project.endYearMonth,
+        name: project.name,
+        summary: project.summary,
+        responsibilities: project.responsibilities,
+        role: project.role as SkillSheetProjectResponse["role"],
+        teamSize: project.teamSize,
+        sortOrder: project.sortOrder,
+
+        technologies: project.technologies.map(
+          (technology): SkillSheetProjectTechnologyResponse => ({
+            id: technology.id,
+            skillOptionId: technology.skillOptionId,
+            category: technology.category as SkillSheetProjectTechnologyResponse["category"],
+            name: technology.name,
+            normalizedName: technology.normalizedName,
+            sortOrder: technology.sortOrder,
+          }),
+        ),
+
+        phases: project.phases.map(
+          (phase): SkillSheetProjectPhaseResponse => ({
+            id: phase.id,
+            phase: phase.phase as SkillSheetProjectPhaseResponse["phase"],
+            sortOrder: phase.sortOrder,
+          }),
+        ),
+      }),
+    ),
   };
 }
