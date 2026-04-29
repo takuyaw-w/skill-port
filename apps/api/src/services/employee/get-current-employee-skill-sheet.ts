@@ -1,3 +1,4 @@
+import { findEmployeeByUserId } from "../../repositories/employees.repository.js";
 import { findSkillSheetByEmployeeId } from "../../repositories/skill-sheets.repository.js";
 
 type GetCurrentEmployeeSkillSheetResult =
@@ -11,21 +12,21 @@ type GetCurrentEmployeeSkillSheetResult =
   };
 
 export async function getCurrentEmployeeSkillSheet(
-  userId: string
+  userId: string,
 ): Promise<GetCurrentEmployeeSkillSheetResult> {
-  const employee = await findSkillSheetByEmployeeId(userId)
+  const employee = await findEmployeeByUserId(userId);
 
   if (!employee) {
     return {
       ok: false,
-      error: "EMPLOYEE_NOT_FOUND"
-    }
+      error: "EMPLOYEE_NOT_FOUND",
+    };
   }
 
-  const skillSheet = await findSkillSheetByEmployeeId(employee.id)
+  const skillSheet = await findSkillSheetByEmployeeId(employee.id);
 
   return {
     ok: true,
-    skillSheet
-  }
+    skillSheet,
+  };
 }

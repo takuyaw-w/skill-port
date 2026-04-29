@@ -1,7 +1,8 @@
 import { asc, eq } from "drizzle-orm";
-import { db } from "../db/client.js";
-import type { DbClient } from "../db/client.js";
+import { db, type DbClient } from "../db/client.js";
 import { skillSheetProjects } from "../db/schema.js";
+import { createSkillSheetProjectPhases } from "./skill-sheet-project-phases.repository.js";
+import { createSkillSheetProjectTechnologies } from "./skill-sheet-project-technologies.repository.js";
 
 type CreateSkillSheetProjectInput = {
   startYearMonth: string;

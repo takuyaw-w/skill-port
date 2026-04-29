@@ -6,7 +6,7 @@ import { getCurrentEmployeeSkillSheet } from "../services/employee/get-current-e
 import { zValidator } from "@hono/zod-validator";
 import { saveSkillSheetRequestSchema } from "../schemas/employee/skill-sheet.requests.js";
 import { zodErrorResponse } from "../shared/validation/zod-error-response.js";
-import { saveCurrentEmployeeSkillSheet } from "../schemas/employee/save-current-employee-skill-sheet.js";
+import { saveCurrentEmployeeSkillSheet } from "../services/employee/save-current-employee-skill-sheet.js";
 
 export const employeeRoutes = new Hono<{ Variables: AppVariables }>();
 
