@@ -3,8 +3,8 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "../db/client.js";
 import type { DbClient } from "../db/client.js";
 import { employees, skillSheets } from "../db/schema.js";
-import type { EmployeeGender } from "../const/employee-gender.js";
-import { EmployeeGender as EmployeeGenderValue } from "../const/employee-gender.js";
+import { EmployeeGender as EmployeeGenderValues } from "../const/employee-gender.js";
+import { EmployeeStatus } from "../const/employee-status.js";
 
 type CreatePendingEmployeeInput = {
   email: string;
@@ -14,7 +14,7 @@ type CreatePendingEmployeeInput = {
   familyNameKana?: string;
   givenNameKana?: string;
   birthDate?: string;
-  gender?: EmployeeGender;
+  gender?: EmployeeGenderValues;
 };
 
 type LinkEmployeeToUserInput = {
@@ -60,8 +60,8 @@ export async function createPendingEmployee(
     employeeCode: input.employeeCode,
     familyName: input.familyName,
     givenName: input.givenName,
-    gender: input.gender ?? EmployeeGenderValue.Unanswered,
-    status: "pending_invitation",
+    gender: input.gender ?? EmployeeGenderValues.Unanswered,
+    status: EmployeeStatus.PendingInvitation,
   };
 
   if (input.familyNameKana !== undefined) {
@@ -86,7 +86,7 @@ export async function linkEmployeeToUser(input: LinkEmployeeToUserInput, client:
     .update(employees)
     .set({
       userId: input.userId,
-      status: "active",
+      status: EmployeeStatus.Active
     })
     .where(eq(employees.id, input.employeeId))
     .returning();

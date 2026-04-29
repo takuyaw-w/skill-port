@@ -1,12 +1,20 @@
 import { z } from "zod";
 
+import { projectPhaseValues } from "../../const/project-phase.js";
+import { projectRoleValues } from "../../const/project-role.js";
+import { skillCategoryValues } from "../../const/skill-category.js";
+
 const optionalTextSchema = z.string().trim().max(1000).optional();
 const optionalShortTextSchema = z.string().trim().max(255).optional();
+
+const skillCategorySchema = z.enum(skillCategoryValues);
+const projectRoleSchema = z.enum(projectRoleValues);
+const projectPhaseSchemaValue = z.enum(projectPhaseValues);
 
 const skillItemSchema = z
   .object({
     skillOptionId: z.uuid().optional().nullable(),
-    category: z.string().trim().min(1).max(100),
+    category: skillCategorySchema,
     name: z.string().trim().min(1).max(255),
     normalizedName: z.string().trim().min(1).max(255).optional().nullable(),
     sortOrder: z.number().int().min(0).optional(),
@@ -16,7 +24,7 @@ const skillItemSchema = z
 const projectTechnologySchema = z
   .object({
     skillOptionId: z.uuid().optional().nullable(),
-    category: z.string().trim().min(1).max(100),
+    category: skillCategorySchema,
     name: z.string().trim().min(1).max(255),
     normalizedName: z.string().trim().min(1).max(255).optional().nullable(),
     sortOrder: z.number().int().min(0).optional(),
@@ -25,7 +33,7 @@ const projectTechnologySchema = z
 
 const projectPhaseSchema = z
   .object({
-    phase: z.string().trim().min(1).max(100),
+    phase: projectPhaseSchemaValue,
     sortOrder: z.number().int().min(0).optional(),
   })
   .strict();
@@ -43,7 +51,7 @@ const projectSchema = z
     summary: optionalTextSchema,
     responsibilities: optionalTextSchema,
 
-    role: z.enum(["leader", "member", "other"]).optional().nullable(),
+    role: projectRoleSchema.optional().nullable(),
     teamSize: z.number().int().min(1).optional().nullable(),
 
     sortOrder: z.number().int().min(0).optional(),

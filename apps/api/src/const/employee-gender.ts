@@ -5,7 +5,14 @@ export const EmployeeGender = {
   Other: 3,
 } as const;
 
-export type EmployeeGender = (typeof EmployeeGender)[keyof typeof EmployeeGender];
+export const employeeGenderValues = [
+  EmployeeGender.Unanswered,
+  EmployeeGender.Male,
+  EmployeeGender.Female,
+  EmployeeGender.Other,
+] as const;
+
+export type EmployeeGender = (typeof employeeGenderValues)[number];
 
 export const employeeGenderLabels: Record<EmployeeGender, string> = {
   [EmployeeGender.Unanswered]: "未回答",

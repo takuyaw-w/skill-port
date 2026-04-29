@@ -1,10 +1,12 @@
 import { z } from "zod";
 
+import { EmployeeGender } from "../../const/employee-gender.js";
+
 export const employeeGenderSchema = z.union([
-  z.literal(0),
-  z.literal(1),
-  z.literal(2),
-  z.literal(3),
+  z.literal(EmployeeGender.Unanswered),
+  z.literal(EmployeeGender.Male),
+  z.literal(EmployeeGender.Female),
+  z.literal(EmployeeGender.Other),
 ]);
 
 export const createEmployeeRequestSchema = z
