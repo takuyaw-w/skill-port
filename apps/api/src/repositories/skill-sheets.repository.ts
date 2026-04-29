@@ -70,15 +70,15 @@ export async function findSkillSheetByEmployeeId(employeeId: string, client: DbC
 
 export async function upsertSkillSheetByEmployeeId(
   input: UpsertSkillSheetInput,
-  client: DbClient = db
+  client: DbClient = db,
 ) {
   const values: typeof skillSheets.$inferInsert = {
     employeeId: input.employeeId,
     publicInitials: input.publicInitials,
     nearestStation: input.nearestStation,
     experienceLabel: input.experienceLabel,
-    selfPr: input.selfPr
-  }
+    selfPr: input.selfPr,
+  };
 
   const [skillSheet] = await client
     .insert(skillSheets)
@@ -90,10 +90,10 @@ export async function upsertSkillSheetByEmployeeId(
         nearestStation: input.nearestStation,
         experienceLabel: input.experienceLabel,
         selfPr: input.selfPr,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
     })
-    .returning()
+    .returning();
 
-  return skillSheet
+  return skillSheet;
 }

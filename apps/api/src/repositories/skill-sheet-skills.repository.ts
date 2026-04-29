@@ -27,9 +27,7 @@ export async function replaceSkillSheetSkills(
   inputs: CreateSkillSheetSkillInput[],
   client: DbClient = db,
 ) {
-  await client
-    .delete(skillSheetSkills)
-    .where(eq(skillSheetSkills.skillSheetId, skillSheetId));
+  await client.delete(skillSheetSkills).where(eq(skillSheetSkills.skillSheetId, skillSheetId));
 
   if (inputs.length === 0) {
     return [];

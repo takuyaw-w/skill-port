@@ -6,7 +6,7 @@ import { skillSheetCertifications } from "../db/schema.js";
 type CreateSkillSheetCertificationInput = {
   name: string;
   sortOrder?: number;
-}
+};
 
 export async function findSkillSheetCertificationsBySkillSheetId(
   skillSheetId: string,
@@ -22,14 +22,14 @@ export async function findSkillSheetCertificationsBySkillSheetId(
 export async function replaceSkillSheetCertifications(
   skillSheetId: string,
   inputs: CreateSkillSheetCertificationInput[],
-  client: DbClient = db
+  client: DbClient = db,
 ) {
   await client
     .delete(skillSheetCertifications)
-    .where(eq(skillSheetCertifications.skillSheetId, skillSheetId))
+    .where(eq(skillSheetCertifications.skillSheetId, skillSheetId));
 
   if (inputs.length === 0) {
-    return []
+    return [];
   }
 
   return client
@@ -38,8 +38,8 @@ export async function replaceSkillSheetCertifications(
       inputs.map((input, index) => ({
         skillSheetId,
         name: input.name,
-        sortOrder: input.sortOrder ?? index
-      }))
+        sortOrder: input.sortOrder ?? index,
+      })),
     )
-    .returning()
+    .returning();
 }

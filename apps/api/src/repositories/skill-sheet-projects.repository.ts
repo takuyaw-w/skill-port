@@ -46,9 +46,7 @@ export async function replaceSkillSheetProjects(
   inputs: CreateSkillSheetProjectInput[],
   client: DbClient = db,
 ) {
-  await client
-    .delete(skillSheetProjects)
-    .where(eq(skillSheetProjects.skillSheetId, skillSheetId));
+  await client.delete(skillSheetProjects).where(eq(skillSheetProjects.skillSheetId, skillSheetId));
 
   const createdProjects = [];
 

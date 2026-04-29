@@ -44,46 +44,54 @@ employeeRoutes.get("/me", async (c) => {
   });
 });
 
-employeeRoutes.get('/skill-sheet', async (c) => {
-  const user = c.get('user')
+employeeRoutes.get("/skill-sheet", async (c) => {
+  const user = c.get("user");
 
-  const result = await getCurrentEmployeeSkillSheet(user.id)
+  const result = await getCurrentEmployeeSkillSheet(user.id);
 
   if (!result.ok) {
-    return c.json({ error: "Employee not found." }, 404)
+    return c.json({ error: "Employee not found." }, 404);
   }
 
   return c.json({
     status: "ok",
-    skillSheet: result.skillSheet
-  })
-})
+    skillSheet: result.skillSheet,
+  });
+});
 
 employeeRoutes.put(
-  '/skill-sheet',
+  "/skill-sheet",
   zValidator("json", saveSkillSheetRequestSchema, (result, c) => {
     if (!result.success) {
-      return zodErrorResponse(c, result.error)
+      return zodErrorResponse(c, result.error);
     }
   }),
   async (c) => {
-    const user = c.get("user")
-    const body = c.req.valid("json")
+    const user = c.get("user");
+    const body = c.req.valid("json");
 
-    const result = await saveCurrentEmployeeSkillSheet(user.id, body)
+    const result = await saveCurrentEmployeeSkillSheet(user.id, body);
 
     if (!result.ok) {
       switch (result.error) {
         case "EMPLOYEE_NOT_FOUND":
-          return c.json({ error: "Employee not found" }, 404)
+          return c.json({ error: "Employee not found" }, 404);
+        case "SKILL_OPTION_NOT_FOUND":
+          return c.json(
+            {
+              error: "Skill option not found",
+              skillOptionId: result.skillOptionId,
+            },
+            400,
+          );
         case "SKILL_SHEET_NOT_FOUND_AFTER_SAVE":
-          return c.json({ error: "Skill sheet not found after save" }, 500)
+          return c.json({ error: "Skill sheet not found after save" }, 500);
       }
     }
 
     return c.json({
       status: "ok",
-      skillSheet: result.skillSheet
-    })
-  }
-)
+      skillSheet: result.skillSheet,
+    });
+  },
+);

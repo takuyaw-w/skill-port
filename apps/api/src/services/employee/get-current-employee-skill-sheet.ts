@@ -3,13 +3,13 @@ import { findSkillSheetByEmployeeId } from "../../repositories/skill-sheets.repo
 
 type GetCurrentEmployeeSkillSheetResult =
   | {
-    ok: true;
-    skillSheet: Awaited<ReturnType<typeof findSkillSheetByEmployeeId>>;
-  }
+      ok: true;
+      skillSheet: Awaited<ReturnType<typeof findSkillSheetByEmployeeId>>;
+    }
   | {
-    ok: false;
-    error: "EMPLOYEE_NOT_FOUND";
-  };
+      ok: false;
+      error: "EMPLOYEE_NOT_FOUND";
+    };
 
 export async function getCurrentEmployeeSkillSheet(
   userId: string,

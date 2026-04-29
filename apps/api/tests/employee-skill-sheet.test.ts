@@ -5,6 +5,8 @@ import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
+import { db } from "../src/db/client.js";
+import { skillOptions } from "../src/db/schema.js";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);
@@ -400,5 +402,124 @@ describe("employee skill sheet API", () => {
     });
 
     expect(res.status).toBe(401);
+  });
+
+  it("uses skill option snapshot when skillOptionId is provided", async () => {
+    const { employeeCookie } = await createInvitedEmployeeAndLogin();
+
+    const [skillOption] = await db
+      .insert(skillOptions)
+      .values({
+        category: "framework",
+        name: "Vue.js",
+        normalizedName: "vue",
+        sortOrder: 0,
+        isActive: true,
+      })
+      .onConflictDoUpdate({
+        target: [skillOptions.category, skillOptions.normalizedName],
+        set: {
+          name: "Vue.js",
+          sortOrder: 0,
+          isActive: true,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+
+    expect(skillOption).toBeTruthy();
+
+    const saveRes = await app.request("/api/employee/skill-sheet", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        cookie: employeeCookie,
+      },
+      body: JSON.stringify({
+        publicInitials: "T.E.",
+        certifications: [],
+        skills: [
+          {
+            skillOptionId: skillOption.id,
+            category: "database",
+            name: "PostgreSQL",
+            normalizedName: "postgresql",
+          },
+        ],
+        projects: [
+          {
+            startYearMonth: "2020-01",
+            endYearMonth: "2021-12",
+            name: "マスタ補完テスト",
+            technologies: [
+              {
+                skillOptionId: skillOption.id,
+                category: "database",
+                name: "PostgreSQL",
+                normalizedName: "postgresql",
+              },
+            ],
+            phases: [],
+          },
+        ],
+      }),
+    });
+
+    expect(saveRes.status).toBe(200);
+
+    const body = await saveRes.json();
+
+    expect(body.skillSheet.skills).toHaveLength(1);
+    expect(body.skillSheet.skills[0]).toMatchObject({
+      skillOptionId: skillOption.id,
+      category: "framework",
+      name: "Vue.js",
+      normalizedName: "vue",
+    });
+
+    expect(body.skillSheet.projects).toHaveLength(1);
+    expect(body.skillSheet.projects[0].technologies).toHaveLength(1);
+    expect(body.skillSheet.projects[0].technologies[0]).toMatchObject({
+      skillOptionId: skillOption.id,
+      category: "framework",
+      name: "Vue.js",
+      normalizedName: "vue",
+    });
+  });
+
+  it("rejects unknown skillOptionId", async () => {
+    const { employeeCookie } = await createInvitedEmployeeAndLogin();
+
+    const unknownSkillOptionId = randomUUID();
+
+    const res = await app.request("/api/employee/skill-sheet", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        cookie: employeeCookie,
+      },
+      body: JSON.stringify({
+        publicInitials: "T.E.",
+        certifications: [],
+        skills: [
+          {
+            skillOptionId: unknownSkillOptionId,
+            category: "language",
+            name: "Unknown",
+            normalizedName: "unknown",
+          },
+        ],
+        projects: [],
+      }),
+    });
+
+    expect(res.status).toBe(400);
+
+    const body = await res.json();
+
+    expect(body).toMatchObject({
+      error: "Skill option not found",
+      skillOptionId: unknownSkillOptionId,
+    });
   });
 });
