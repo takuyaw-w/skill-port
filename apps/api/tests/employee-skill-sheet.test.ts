@@ -7,6 +7,10 @@ import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
 import { db } from "../src/db/client.js";
 import { skillOptions } from "../src/db/schema.js";
+import { EmployeeGender } from "../src/const/employee-gender.js";
+import { ProjectPhase } from "../src/const/project-phase.js";
+import { ProjectRole } from "../src/const/project-role.js";
+import { SkillCategory } from "../src/const/skill-category.js";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);
@@ -44,7 +48,7 @@ async function createInvitedEmployeeAndLogin() {
       givenName: "Employee",
       familyNameKana: "テスト",
       givenNameKana: "エンプロイー",
-      gender: 1,
+      gender: EmployeeGender.Male,
     }),
   });
 
@@ -128,13 +132,13 @@ describe("employee skill sheet API", () => {
         ],
         skills: [
           {
-            category: "language",
+            category: SkillCategory.Language,
             name: "TypeScript",
             normalizedName: "typescript",
             sortOrder: 0,
           },
           {
-            category: "framework",
+            category: SkillCategory.Framework,
             name: "Vue.js",
             normalizedName: "vue",
             sortOrder: 0,
@@ -147,24 +151,24 @@ describe("employee skill sheet API", () => {
             name: "業務管理システム開発",
             summary: "社内向け業務管理システムの開発。",
             responsibilities: "フロントエンド実装、API連携、単体テストを担当。",
-            role: "member",
+            role: ProjectRole.Member,
             teamSize: 10,
             sortOrder: 0,
             technologies: [
               {
-                category: "language",
+                category: SkillCategory.Language,
                 name: "TypeScript",
                 normalizedName: "typescript",
                 sortOrder: 0,
               },
               {
-                category: "framework",
+                category: SkillCategory.Framework,
                 name: "Vue.js",
                 normalizedName: "vue",
                 sortOrder: 1,
               },
               {
-                category: "database",
+                category: SkillCategory.Database,
                 name: "PostgreSQL",
                 normalizedName: "postgresql",
                 sortOrder: 2,
@@ -172,15 +176,15 @@ describe("employee skill sheet API", () => {
             ],
             phases: [
               {
-                phase: "basic_design",
+                phase: ProjectPhase.BasicDesign,
                 sortOrder: 0,
               },
               {
-                phase: "implementation",
+                phase: ProjectPhase.Implementation,
                 sortOrder: 1,
               },
               {
-                phase: "unit_test",
+                phase: ProjectPhase.UnitTest,
                 sortOrder: 2,
               },
             ],
@@ -208,7 +212,7 @@ describe("employee skill sheet API", () => {
 
     expect(saveBody.skillSheet.skills).toHaveLength(2);
     expect(saveBody.skillSheet.skills[0]).toMatchObject({
-      category: "language",
+      category: SkillCategory.Language,
       name: "TypeScript",
       normalizedName: "typescript",
       sortOrder: 0,
@@ -219,7 +223,7 @@ describe("employee skill sheet API", () => {
       startYearMonth: "2020-01",
       endYearMonth: "2021-12",
       name: "業務管理システム開発",
-      role: "member",
+      role: ProjectRole.Member,
       teamSize: 10,
       sortOrder: 0,
     });
@@ -273,12 +277,12 @@ describe("employee skill sheet API", () => {
         ],
         skills: [
           {
-            category: "language",
+            category: SkillCategory.Language,
             name: "TypeScript",
             normalizedName: "typescript",
           },
           {
-            category: "framework",
+            category: SkillCategory.Framework,
             name: "Vue.js",
             normalizedName: "vue",
           },
@@ -290,14 +294,14 @@ describe("employee skill sheet API", () => {
             name: "旧プロジェクト",
             technologies: [
               {
-                category: "language",
+                category: SkillCategory.Language,
                 name: "TypeScript",
                 normalizedName: "typescript",
               },
             ],
             phases: [
               {
-                phase: "implementation",
+                phase: ProjectPhase.Implementation,
               },
             ],
           },
@@ -321,7 +325,7 @@ describe("employee skill sheet API", () => {
         certifications: [],
         skills: [
           {
-            category: "language",
+            category: SkillCategory.Language,
             name: "JavaScript",
             normalizedName: "javascript",
           },
@@ -410,7 +414,7 @@ describe("employee skill sheet API", () => {
     const [skillOption] = await db
       .insert(skillOptions)
       .values({
-        category: "framework",
+        category: SkillCategory.Framework,
         name: "Vue.js",
         normalizedName: "vue",
         sortOrder: 0,
@@ -441,7 +445,7 @@ describe("employee skill sheet API", () => {
         skills: [
           {
             skillOptionId: skillOption.id,
-            category: "database",
+            category: SkillCategory.Database,
             name: "PostgreSQL",
             normalizedName: "postgresql",
           },
@@ -454,7 +458,7 @@ describe("employee skill sheet API", () => {
             technologies: [
               {
                 skillOptionId: skillOption.id,
-                category: "database",
+                category: SkillCategory.Database,
                 name: "PostgreSQL",
                 normalizedName: "postgresql",
               },
@@ -472,7 +476,7 @@ describe("employee skill sheet API", () => {
     expect(body.skillSheet.skills).toHaveLength(1);
     expect(body.skillSheet.skills[0]).toMatchObject({
       skillOptionId: skillOption.id,
-      category: "framework",
+      category: SkillCategory.Framework,
       name: "Vue.js",
       normalizedName: "vue",
     });
@@ -481,7 +485,7 @@ describe("employee skill sheet API", () => {
     expect(body.skillSheet.projects[0].technologies).toHaveLength(1);
     expect(body.skillSheet.projects[0].technologies[0]).toMatchObject({
       skillOptionId: skillOption.id,
-      category: "framework",
+      category: SkillCategory.Framework,
       name: "Vue.js",
       normalizedName: "vue",
     });
@@ -504,7 +508,7 @@ describe("employee skill sheet API", () => {
         skills: [
           {
             skillOptionId: unknownSkillOptionId,
-            category: "language",
+            category: SkillCategory.Language,
             name: "Unknown",
             normalizedName: "unknown",
           },

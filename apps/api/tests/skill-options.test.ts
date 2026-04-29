@@ -6,6 +6,7 @@ import { skillOptions } from "../src/db/schema.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
+import { SkillCategory } from "../src/const/skill-category.js";
 
 async function createLoggedInUser(role: "admin" | "employee") {
   const email = uniqueEmail(role);
@@ -29,28 +30,28 @@ async function createLoggedInUser(role: "admin" | "employee") {
 async function seedSkillOptions() {
   await db.insert(skillOptions).values([
     {
-      category: "language",
+      category: SkillCategory.Language,
       name: "TypeScript",
       normalizedName: "typescript",
       sortOrder: 10,
       isActive: true,
     },
     {
-      category: "language",
+      category: SkillCategory.Language,
       name: "JavaScript",
       normalizedName: "javascript",
       sortOrder: 20,
       isActive: true,
     },
     {
-      category: "framework",
+      category: SkillCategory.Framework,
       name: "Vue.js",
       normalizedName: "vue",
       sortOrder: 10,
       isActive: true,
     },
     {
-      category: "framework",
+      category: SkillCategory.Framework,
       name: "Deprecated Framework",
       normalizedName: "deprecated_framework",
       sortOrder: 99,
@@ -133,7 +134,7 @@ describe("skill options API", () => {
 
     const { cookie } = await createLoggedInUser("employee");
 
-    const res = await app.request("/api/skill-options?category=framework", {
+    const res = await app.request(`/api/skill-options?category=${SkillCategory.Framework}`, {
       method: "GET",
       headers: {
         cookie,
@@ -146,7 +147,7 @@ describe("skill options API", () => {
 
     expect(body.skillOptions).toHaveLength(1);
     expect(body.skillOptions[0]).toMatchObject({
-      category: "framework",
+      category: SkillCategory.Framework,
       name: "Vue.js",
       normalizedName: "vue",
     });

@@ -5,6 +5,8 @@ import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
+import { EmployeeGender } from "../src/const/employee-gender.js";
+import { EmployeeStatus } from "../src/const/employee-status.js";
 
 describe("admin employees API", () => {
   beforeEach(async () => {
@@ -41,7 +43,7 @@ describe("admin employees API", () => {
         givenName: "Employee",
         familyNameKana: "テスト",
         givenNameKana: "エンプロイー",
-        gender: 1,
+        gender: EmployeeGender.Male,
       }),
     });
 
@@ -55,8 +57,8 @@ describe("admin employees API", () => {
       givenName: "Employee",
       familyNameKana: "テスト",
       givenNameKana: "エンプロイー",
-      gender: 1,
-      status: "pending_invitation",
+      gender: EmployeeGender.Male,
+      status: EmployeeStatus.PendingInvitation,
     });
 
     expect(body.invitationUrl).toContain("/invitation/");
@@ -149,7 +151,7 @@ describe("admin employees API", () => {
         givenName: "Exists",
         familyNameKana: "スキル",
         givenNameKana: "アリ",
-        gender: 1,
+        gender: EmployeeGender.Male,
       }),
     });
 
@@ -170,7 +172,7 @@ describe("admin employees API", () => {
         givenName: "None",
         familyNameKana: "スキル",
         givenNameKana: "ナシ",
-        gender: 2,
+        gender: EmployeeGender.Female,
       }),
     });
 

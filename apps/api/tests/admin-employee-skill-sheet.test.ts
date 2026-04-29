@@ -5,6 +5,10 @@ import { app } from "../src/app.js";
 import { cleanupDatabase } from "./helpers/cleanup.js";
 import { createTestUser, loginAndGetCookie } from "./helpers/auth.js";
 import { uniqueEmail } from "./helpers/test-data.js";
+import { EmployeeGender } from "../src/const/employee-gender.js";
+import { ProjectPhase } from "../src/const/project-phase.js";
+import { ProjectRole } from "../src/const/project-role.js";
+import { SkillCategory } from "../src/const/skill-category.js";
 
 function extractInvitationToken(invitationUrl: string) {
   const url = new URL(invitationUrl);
@@ -47,7 +51,7 @@ async function createAdminAndEmployee() {
       givenName: "Employee",
       familyNameKana: "テスト",
       givenNameKana: "エンプロイー",
-      gender: 1,
+      gender: EmployeeGender.Male,
     }),
   });
 
@@ -148,7 +152,7 @@ describe("admin employee skill sheet API", () => {
         ],
         skills: [
           {
-            category: "language",
+            category: SkillCategory.Language,
             name: "TypeScript",
             normalizedName: "typescript",
             sortOrder: 0,
@@ -161,12 +165,12 @@ describe("admin employee skill sheet API", () => {
             name: "業務管理システム開発",
             summary: "社内向け業務管理システムの開発。",
             responsibilities: "フロントエンド実装を担当。",
-            role: "member",
+            role: ProjectRole.Member,
             teamSize: 10,
             sortOrder: 0,
             technologies: [
               {
-                category: "language",
+                category: SkillCategory.Language,
                 name: "TypeScript",
                 normalizedName: "typescript",
                 sortOrder: 0,
@@ -174,7 +178,7 @@ describe("admin employee skill sheet API", () => {
             ],
             phases: [
               {
-                phase: "implementation",
+                phase: ProjectPhase.Implementation,
                 sortOrder: 0,
               },
             ],
